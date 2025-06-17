@@ -27,10 +27,10 @@ const FeaturesGrid = () => {
   ];
 
   return (
-    <section className="bg-white py-16 px-4">
+    <section className="bg-slate-900 py-16 px-4">
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {features.map((feature, index) => (
-          <div key={index} className="flex flex-col items-center text-center">
+          <div key={index} className="p-6 bg-white rounded-xl shadow-md flex flex-col items-center text-center hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105">
             {feature.icon}
             <h4 className="font-semibold text-lg text-slate-900 mb-2">{feature.title}</h4>
             <p className="text-gray-600">{feature.description}</p>
