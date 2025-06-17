@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,6 +40,7 @@ const HeroSection = () => {
     script.onload = async () => {
       const canvas = document.getElementById('globeCanvas');
       console.log('Canvas found:', canvas);
+      console.log('Canvas dimensions:', canvas ? { width: canvas.clientWidth, height: canvas.clientHeight } : 'no canvas');
       console.log('THREE loaded:', !!window.THREE);
       
       if (!canvas || !window.THREE) {
@@ -138,9 +140,15 @@ const HeroSection = () => {
         style={{ 
           zIndex: 1,
           opacity: 1,
-          pointerEvents: 'none'
+          pointerEvents: 'none',
+          background: 'transparent'
         }}
       />
+
+      {/* Debug info - remove this after testing */}
+      <div className="absolute top-4 left-4 text-white text-sm bg-black/50 p-2 rounded z-50">
+        Canvas Debug: Check console for logs
+      </div>
 
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5" style={{ zIndex: 2 }}>
