@@ -12,7 +12,7 @@ const AudienceSelection = () => {
 
   useEffect(() => {
     const initShaderBackground = () => {
-      console.log('Initializing enhanced shader background...');
+      console.log('Initializing shader background...');
       const canvas = document.getElementById('shader-bg') as HTMLCanvasElement;
       if (!canvas) {
         console.error('Canvas not found');
@@ -25,7 +25,7 @@ const AudienceSelection = () => {
         return;
       }
 
-      console.log('Creating Three.js scene with enhanced shader...');
+      console.log('Creating Three.js scene with flowing beams...');
       
       // @ts-ignore
       const scene = new THREE.Scene();
@@ -35,8 +35,7 @@ const AudienceSelection = () => {
       const renderer = new THREE.WebGLRenderer({ 
         canvas, 
         alpha: true,
-        antialias: true,
-        powerPreference: "high-performance"
+        antialias: true
       });
       
       const uniforms = {
@@ -46,7 +45,7 @@ const AudienceSelection = () => {
         iResolution: { value: new THREE.Vector2() }
       };
 
-      // Enhanced shader with more visible flowing light beams
+      // Simplified but more visible shader based on the Nexus reference
       // @ts-ignore
       const material = new THREE.ShaderMaterial({
         uniforms,
@@ -59,76 +58,43 @@ const AudienceSelection = () => {
           uniform vec2 iResolution;
           uniform float iTime;
           
-          float noise(vec2 p) {
-            return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-          }
-          
-          float fbm(vec2 p) {
-            float value = 0.0;
-            float amplitude = 0.5;
-            for(int i = 0; i < 4; i++) {
-              value += amplitude * noise(p);
-              p *= 2.0;
-              amplitude *= 0.5;
-            }
-            return value;
-          }
-          
-          float beam(vec2 uv, vec2 start, vec2 end, float width, float intensity) {
-            vec2 dir = normalize(end - start);
-            vec2 perp = vec2(-dir.y, dir.x);
-            vec2 toPoint = uv - start;
-            float along = dot(toPoint, dir);
-            float across = abs(dot(toPoint, perp));
-            float falloff = 1.0 - smoothstep(0.0, width, across);
-            float lengthFalloff = 1.0 - smoothstep(0.0, length(end - start), along);
-            lengthFalloff *= smoothstep(-0.1, 0.0, along);
-            return falloff * lengthFalloff * intensity;
+          float strength(vec2 src, vec2 dir, vec2 c, float a, float b, float s) {
+            vec2 d = c - src;
+            float cosang = dot(normalize(d), dir);
+            return clamp((0.45 + 0.15 * sin(cosang * a + iTime * s)) + (0.3 + 0.2 * cos(-cosang * b + iTime * s)), 0.0, 1.0) *
+                   clamp((iResolution.x - length(d)) / iResolution.x, 0.5, 1.0);
           }
           
           void main() {
-            vec2 uv = gl_FragCoord.xy / iResolution.xy;
-            vec2 centeredUv = (gl_FragCoord.xy - 0.5 * iResolution.xy) / iResolution.y;
+            vec2 c = gl_FragCoord.xy;
+            vec2 res = iResolution;
             
-            vec3 color = vec3(0.0);
+            // Two main light beams similar to Nexus
+            vec2 p1 = res * vec2(0.7, -0.4);
+            vec2 d1 = normalize(vec2(1.0, -0.116));
+            vec2 p2 = res * vec2(0.8, -0.6);
+            vec2 d2 = normalize(vec2(1.0, 0.241));
             
-            // Multiple flowing light beams
-            float time = iTime * 0.5;
+            vec4 col = vec4(0.0);
             
-            // Beam 1 - Diagonal flowing
-            vec2 start1 = vec2(-1.5 + sin(time) * 0.3, -1.0 + cos(time * 0.7) * 0.2);
-            vec2 end1 = vec2(1.5 + cos(time * 0.8) * 0.4, 1.0 + sin(time * 0.6) * 0.3);
-            float beam1 = beam(centeredUv, start1, end1, 0.05, 0.8);
-            color += vec3(0.2, 0.6, 1.0) * beam1;
+            // First beam - blue/cyan
+            col += vec4(1.0) * strength(p1, d1, c, 36.22, 21.11, 1.5) * 0.5;
             
-            // Beam 2 - Horizontal flowing
-            vec2 start2 = vec2(-1.2 + cos(time * 1.2) * 0.4, 0.3 + sin(time * 0.9) * 0.2);
-            vec2 end2 = vec2(1.2 + sin(time * 0.7) * 0.3, -0.2 + cos(time * 1.1) * 0.25);
-            float beam2 = beam(centeredUv, start2, end2, 0.04, 0.6);
-            color += vec3(0.6, 0.3, 1.0) * beam2;
+            // Second beam - purple/magenta
+            col += vec4(1.0) * strength(p2, d2, c, 22.39, 18.02, 1.1) * 0.4;
             
-            // Beam 3 - Curved path
-            vec2 start3 = vec2(0.8 + sin(time * 1.5) * 0.2, -0.8 + cos(time) * 0.3);
-            vec2 end3 = vec2(-0.6 + cos(time * 0.8) * 0.4, 0.6 + sin(time * 1.3) * 0.2);
-            float beam3 = beam(centeredUv, start3, end3, 0.06, 0.7);
-            color += vec3(0.3, 1.0, 0.7) * beam3;
+            // Color gradient based on screen position
+            float brightness = 1.0 - (c.y / res.y);
+            col.x *= 0.1 + brightness * 0.8; // More blue at top
+            col.y *= 0.3 + brightness * 0.6; // Some green
+            col.z *= 0.5 + brightness * 0.5; // Purple tint
             
-            // Add subtle background gradient
-            float gradient = 1.0 - length(centeredUv) * 0.3;
-            color += vec3(0.02, 0.05, 0.1) * gradient;
-            
-            // Add some sparkle effects
-            float sparkle = fbm(centeredUv * 10.0 + time) * 0.1;
-            color += vec3(sparkle);
-            
-            // Enhance brightness and contrast
-            color = pow(color, vec3(0.8));
-            color *= 1.2;
-            
-            gl_FragColor = vec4(color, 1.0);
+            // Increase overall brightness
+            gl_FragColor = col * 0.25;
           }
         `,
-        transparent: true
+        transparent: true,
+        blending: THREE.AdditiveBlending
       });
 
       // @ts-ignore
@@ -150,7 +116,7 @@ const AudienceSelection = () => {
         requestAnimationFrame(animate);
       };
 
-      console.log('Starting enhanced animation loop...');
+      console.log('Starting animation loop...');
       resize();
       animate();
 
@@ -201,7 +167,7 @@ const AudienceSelection = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-black">
-      {/* Enhanced Shader Background */}
+      {/* Shader Background Canvas */}
       <canvas 
         id="shader-bg" 
         className="fixed inset-0 w-full h-full"
