@@ -16,6 +16,8 @@ const HeroSection = () => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isMobile = window.innerWidth < 640;
     
+    console.log('Globe init check:', { prefersReducedMotion, isMobile, width: window.innerWidth });
+    
     if (prefersReducedMotion || isMobile) return;
 
     // Lazy load Three.js and initialize globe
@@ -23,6 +25,9 @@ const HeroSection = () => {
     script.src = 'https://unpkg.com/three@0.152.0/build/three.min.js';
     script.onload = () => {
       const canvas = document.getElementById('globeCanvas');
+      console.log('Canvas found:', canvas);
+      console.log('THREE loaded:', !!window.THREE);
+      
       if (!canvas || !window.THREE) return;
 
       try {
@@ -41,25 +46,27 @@ const HeroSection = () => {
         camera.position.setFromSpherical(new window.THREE.Spherical(initialPos.r, initialPos.phi, initialPos.theta));
         camera.lookAt(0, 0, 0);
         
-        // Create globe
+        // Create globe with more visible settings
         const globe = new window.THREE.Mesh(
           new window.THREE.SphereGeometry(1, 64, 64),
           new window.THREE.MeshStandardMaterial({ 
             color: 0x3b82f6, 
             wireframe: true,
             transparent: true,
-            opacity: 0.7
+            opacity: 0.8  // Increased opacity
           })
         );
         scene.add(globe);
         
         // Add lighting
-        const ambientLight = new window.THREE.AmbientLight(0x404040, 0.5);
+        const ambientLight = new window.THREE.AmbientLight(0x404040, 0.8); // Increased intensity
         scene.add(ambientLight);
         
-        const pointLight = new window.THREE.PointLight(0xffffff, 1);
+        const pointLight = new window.THREE.PointLight(0xffffff, 1.5); // Increased intensity
         pointLight.position.set(5, 3, 5);
         scene.add(pointLight);
+        
+        console.log('Globe scene setup complete');
         
         let start = performance.now();
         let animationId: number;
@@ -69,7 +76,7 @@ const HeroSection = () => {
           
           if (t < 2) {
             // Phase 1: Slow global spin for 2 seconds
-            globe.rotation.y += 0.001;
+            globe.rotation.y += 0.002; // Slightly faster for visibility
           } else if (t < 6) {
             // Phase 2: Zoom and pan to North America over 4 seconds (2-6s)
             const u = (t - 2) / 4; // Normalized progress (0-1)
@@ -85,8 +92,8 @@ const HeroSection = () => {
             camera.position.setFromSpherical(new window.THREE.Spherical(r, phi, theta));
             camera.lookAt(0, 0, 0);
             
-            // Continue slow rotation during zoom
-            globe.rotation.y += 0.001;
+            // Continue rotation during zoom
+            globe.rotation.y += 0.002;
           }
           // Phase 3: After 6 seconds, stop all animation and hold position
           
@@ -99,6 +106,7 @@ const HeroSection = () => {
         }
         
         animationId = requestAnimationFrame(animate);
+        console.log('Animation started');
         
         const handleResize = () => {
           renderer.setSize(window.innerWidth, window.innerHeight);
@@ -117,12 +125,12 @@ const HeroSection = () => {
           renderer.dispose();
         };
       } catch (error) {
-        console.warn('Failed to initialize Three.js globe:', error);
+        console.error('Failed to initialize Three.js globe:', error);
       }
     };
     
     script.onerror = () => {
-      console.warn('Failed to load Three.js library');
+      console.error('Failed to load Three.js library');
     };
     
     document.head.appendChild(script);
@@ -140,7 +148,7 @@ const HeroSection = () => {
       <canvas 
         id="globeCanvas" 
         className="absolute inset-0 w-full h-full -z-10 hidden sm:block"
-        style={{ filter: 'opacity(0.4)' }}
+        style={{ filter: 'opacity(0.6)' }}
       />
 
       {/* Background Pattern */}
