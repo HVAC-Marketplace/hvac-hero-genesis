@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -44,7 +45,7 @@ const AudienceSelection = () => {
         iResolution: { value: new window.THREE.Vector2() }
       };
 
-      // Enhanced shader with bottom-right anchor and brighter beams
+      // Subtle flowing beams shader inspired by Nexus
       // @ts-ignore - THREE.js loaded via CDN
       const material = new window.THREE.ShaderMaterial({
         uniforms,
@@ -57,53 +58,59 @@ const AudienceSelection = () => {
           uniform vec2 iResolution;
           uniform float iTime;
           
-          float beam(vec2 origin, vec2 direction, vec2 position, float width, float intensity) {
+          float smoothBeam(vec2 origin, vec2 direction, vec2 position, float width, float intensity, float falloffRate) {
             vec2 toPoint = position - origin;
             float projLength = dot(toPoint, direction);
-            vec2 projection = origin + direction * max(0.0, projLength);
+            
+            if (projLength < 0.0) return 0.0;
+            
+            vec2 projection = origin + direction * projLength;
             float distance = length(position - projection);
             
-            float falloff = 1.0 / (1.0 + distance * distance * width);
-            float lengthFalloff = 1.0 / (1.0 + projLength * projLength * 0.0001);
+            float beamFalloff = exp(-distance * width);
+            float lengthFalloff = exp(-projLength * falloffRate);
             
-            return falloff * lengthFalloff * intensity;
+            return beamFalloff * lengthFalloff * intensity;
           }
           
           void main() {
             vec2 uv = gl_FragCoord.xy / iResolution.xy;
             vec2 pos = gl_FragCoord.xy;
             
-            // Light source anchored at bottom right (80% from left, 10% from bottom)
-            vec2 lightSource = vec2(iResolution.x * 0.8, iResolution.y * 0.1);
+            // Light source anchored at bottom right (80% from left, 5% from bottom)
+            vec2 lightSource = vec2(iResolution.x * 0.8, iResolution.y * 0.05);
             
             vec3 color = vec3(0.0);
             
-            // Multiple beams emanating from the light source
-            // Main beam going up and left
-            vec2 dir1 = normalize(vec2(-0.6, 0.8));
-            color += vec3(0.3, 0.6, 1.0) * beam(lightSource, dir1, pos, 0.002, 0.8);
+            // Subtle flowing beams with gentle animation
+            float time = iTime * 0.3;
             
-            // Secondary beam going more left
-            vec2 dir2 = normalize(vec2(-0.8, 0.6));
-            color += vec3(0.6, 0.3, 1.0) * beam(lightSource, dir2, pos, 0.003, 0.6);
+            // Main diagonal beam (blue-cyan)
+            vec2 dir1 = normalize(vec2(-0.7, 0.7));
+            color += vec3(0.2, 0.5, 0.8) * smoothBeam(lightSource, dir1, pos, 0.008, 0.4, 0.0002);
             
-            // Third beam going straight up
-            vec2 dir3 = normalize(vec2(-0.4, 0.9));
-            color += vec3(0.4, 0.8, 1.0) * beam(lightSource, dir3, pos, 0.0025, 0.7);
+            // Secondary beam with slight wave (purple-blue)
+            float wave1 = sin(time + pos.y * 0.001) * 0.1;
+            vec2 dir2 = normalize(vec2(-0.6 + wave1, 0.8));
+            color += vec3(0.4, 0.3, 0.7) * smoothBeam(lightSource, dir2, pos, 0.01, 0.3, 0.0002);
             
-            // Fourth beam with slight animation
-            float angle = iTime * 0.2;
-            vec2 dir4 = normalize(vec2(-0.7 + sin(angle) * 0.1, 0.7 + cos(angle) * 0.1));
-            color += vec3(0.8, 0.4, 1.0) * beam(lightSource, dir4, pos, 0.004, 0.5);
+            // Third beam going more upward (cyan)
+            float wave2 = cos(time * 0.8 + pos.x * 0.001) * 0.08;
+            vec2 dir3 = normalize(vec2(-0.5, 0.85 + wave2));
+            color += vec3(0.3, 0.6, 0.9) * smoothBeam(lightSource, dir3, pos, 0.012, 0.25, 0.0002);
             
-            // Add some glow around the light source
-            float distToSource = length(pos - lightSource);
-            float sourceGlow = 0.3 / (1.0 + distToSource * distToSource * 0.00001);
-            color += vec3(0.5, 0.7, 1.0) * sourceGlow;
+            // Fourth subtle beam (light purple)
+            float wave3 = sin(time * 1.2 + pos.y * 0.0008) * 0.06;
+            vec2 dir4 = normalize(vec2(-0.8 + wave3, 0.6));
+            color += vec3(0.5, 0.4, 0.8) * smoothBeam(lightSource, dir4, pos, 0.015, 0.2, 0.0002);
             
-            // Increase overall brightness and add subtle gradient
-            float brightness = 1.0 - (uv.y * 0.3);
-            color *= brightness * 2.0; // Doubled brightness
+            // Subtle ambient gradient from bottom right
+            float distToCorner = length(uv - vec2(0.8, 0.05));
+            float ambientGlow = 0.1 * exp(-distToCorner * 2.0);
+            color += vec3(0.1, 0.2, 0.4) * ambientGlow;
+            
+            // Overall scene darkening to match reference
+            color *= 0.7;
             
             gl_FragColor = vec4(color, 1.0);
           }
