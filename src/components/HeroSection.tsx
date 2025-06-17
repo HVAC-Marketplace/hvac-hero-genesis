@@ -1,11 +1,78 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const HeroSection = () => {
+  useEffect(() => {
+    // Only initialize globe on desktop and when user doesn't prefer reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.innerWidth < 768;
+    
+    if (prefersReducedMotion || isMobile) return;
+
+    // Lazy load Three.js and initialize globe
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/three@0.152.0/build/three.min.js';
+    script.onload = () => {
+      const canvas = document.getElementById('globeCanvas');
+      if (!canvas || !window.THREE) return;
+
+      const r = new window.THREE.WebGLRenderer({ canvas, alpha: true });
+      r.setSize(window.innerWidth, window.innerHeight);
+      const s = new window.THREE.Scene();
+      const c = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+      c.position.z = 3.2;
+      
+      const g = new window.THREE.SphereGeometry(1, 64, 64);
+      const m = new window.THREE.MeshStandardMaterial({ color: 0x3b82f6, wireframe: true });
+      const globe = new window.THREE.Mesh(g, m);
+      s.add(globe);
+      
+      const light = new window.THREE.PointLight(0xffffff, 1);
+      light.position.set(5, 3, 5);
+      s.add(light);
+      
+      function animate() {
+        requestAnimationFrame(animate);
+        globe.rotation.y += 0.002;
+        r.render(s, c);
+      }
+      animate();
+      
+      const handleResize = () => {
+        r.setSize(window.innerWidth, window.innerHeight);
+        c.aspect = window.innerWidth / window.innerHeight;
+        c.updateProjectionMatrix();
+      };
+      
+      window.addEventListener('resize', handleResize);
+      
+      // Cleanup function
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        r.dispose();
+      };
+    };
+    
+    document.head.appendChild(script);
+    
+    return () => {
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
+
   return (
-    <section className="relative min-h-screen bg-slate-900 overflow-hidden font-inter">
+    <section className="relative min-h-screen bg-slate-900 overflow-hidden font-inter section-wave">
+      {/* Rotating Globe Canvas */}
+      <canvas 
+        id="globeCanvas" 
+        className="absolute inset-0 w-full h-full -z-10 hidden md:block"
+        style={{ filter: 'opacity(0.3)' }}
+      />
+
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
