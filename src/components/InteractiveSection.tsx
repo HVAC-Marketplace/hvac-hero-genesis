@@ -63,15 +63,13 @@ const InteractiveSection = () => {
       </div>
 
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className={`text-center p-8 max-w-4xl mx-auto transform transition-all duration-1000 ease-out ${
-          isVisible 
-            ? 'translate-y-0 opacity-100 scale-100' 
-            : 'translate-y-12 opacity-0 scale-95'
-        }`}>
+        <div className="text-center p-8 max-w-4xl mx-auto">
           
-          {/* Main headline with staggered animation */}
-          <h2 className={`text-6xl md:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1000 ease-out delay-200 ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+          {/* Slide 1: Main headline with slide-in from left */}
+          <h2 className={`text-6xl md:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1000 ease-out ${
+            isVisible 
+              ? 'translate-x-0 opacity-100' 
+              : '-translate-x-20 opacity-0'
           }`}>
             <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
               Transform Your
@@ -82,16 +80,20 @@ const InteractiveSection = () => {
             </span>
           </h2>
 
-          {/* Subtitle with delayed animation */}
-          <p className={`text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed transition-all duration-1000 ease-out delay-400 ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+          {/* Slide 2: Subtitle with slide-in from right and delay */}
+          <p className={`text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed transition-all duration-1000 ease-out delay-300 ${
+            isVisible 
+              ? 'translate-x-0 opacity-100' 
+              : 'translate-x-20 opacity-0'
           }`}>
             Interactive control and insights for modern HVAC solutions that adapt to your needs.
           </p>
 
-          {/* Feature cards */}
+          {/* Slide 3: Feature cards with slide-in from bottom and staggered delays */}
           <div className={`grid md:grid-cols-3 gap-6 mb-10 transition-all duration-1000 ease-out delay-600 ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
+            isVisible 
+              ? 'translate-y-0 opacity-100' 
+              : 'translate-y-16 opacity-0'
           }`}>
             {[
               { title: 'Smart Control', desc: 'AI-powered automation', icon: '🎯' },
@@ -101,7 +103,9 @@ const InteractiveSection = () => {
               <div 
                 key={feature.title}
                 className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 hover:bg-white/20 hover:scale-105 transition-all duration-500 ease-out group ${
-                  isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                  isVisible 
+                    ? 'translate-y-0 opacity-100' 
+                    : 'translate-y-12 opacity-0'
                 }`}
                 style={{ transitionDelay: `${800 + index * 150}ms` }}
               >
@@ -114,9 +118,11 @@ const InteractiveSection = () => {
             ))}
           </div>
 
-          {/* CTA Button with enhanced styling */}
-          <div className={`transition-all duration-1000 ease-out delay-1000 ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+          {/* Slide 4: CTA Button with slide-in from bottom and final delay */}
+          <div className={`transition-all duration-1000 ease-out delay-1200 ${
+            isVisible 
+              ? 'translate-y-0 opacity-100' 
+              : 'translate-y-12 opacity-0'
           }`}>
             <a 
               href="#services" 
