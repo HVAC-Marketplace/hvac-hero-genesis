@@ -408,17 +408,22 @@ const AudienceSelection = () => {
             <div className="text-center mb-6">
               {/* Brand Logo with Professional Background */}
               <div className="inline-flex items-center justify-center mb-3 relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-white/15 via-white/8 to-transparent backdrop-blur-xl rounded-full flex items-center justify-center border border-white/10 shadow-lg">
-                  <div className="w-14 h-14 bg-gradient-to-br from-gray-800/80 to-gray-900/90 rounded-xl flex items-center justify-center shadow-inner">
+                <div className="w-20 h-20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 shadow-lg overflow-hidden">
+                  <div className="w-16 h-16 bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-700/70 rounded-full flex items-center justify-center relative overflow-hidden">
                     <img 
                       src="/lovable-uploads/e85d666f-01ca-44e0-bc99-4e537db18924.png" 
                       alt="HVAC Marketplace Logo" 
-                      className="w-10 h-10 object-contain mix-blend-screen"
+                      className="w-12 h-12 object-contain filter brightness-110 contrast-110 saturate-110 mix-blend-screen opacity-90"
+                      style={{
+                        filter: 'brightness(1.2) contrast(1.1) saturate(1.2) drop-shadow(0 0 8px rgba(255,255,255,0.3))'
+                      }}
                     />
+                    {/* Inner glow to blend edges */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-transparent to-orange-400/20 rounded-full mix-blend-overlay"></div>
                   </div>
                 </div>
-                {/* Subtle glow effect */}
-                <div className="absolute inset-0 w-20 h-20 bg-gradient-to-br from-blue-400/15 to-orange-400/15 rounded-full blur-xl opacity-70"></div>
+                {/* Subtle outer glow effect */}
+                <div className="absolute inset-0 w-20 h-20 bg-gradient-to-br from-blue-400/10 to-orange-400/10 rounded-full blur-2xl opacity-80"></div>
               </div>
               <h1 className="text-2xl font-light text-white mb-2 tracking-wide">
                 Welcome to the HVAC Marketplace
