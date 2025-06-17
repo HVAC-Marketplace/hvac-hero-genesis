@@ -375,9 +375,9 @@ const AudienceSelection = () => {
   const platformFeatures = [
     {
       icon: Bot,
-      title: 'Intelligent Automation',
-      description: 'Automate repetitive tasks across tools like Slack, Notion, GitHub, and Figma with AI-powered triggers and actions—no code required.',
-      action: 'Learn more',
+      title: 'Smart Order Automation',
+      description: 'Automate repeat ordering, restocking alerts, and maintenance reminders—no coding required.',
+      action: 'Learn how',
       gradient: 'from-blue-500 to-blue-600',
       hoverColor: 'hover:border-blue-500/60 hover:shadow-blue-500/30',
       textColor: 'text-blue-400',
@@ -385,8 +385,8 @@ const AudienceSelection = () => {
     },
     {
       icon: Link,
-      title: 'Unified Integrations',
-      description: 'Connect 300+ apps into one seamless workspace. Sync files, messages, and tasks instantly between your favorite tools.',
+      title: 'Seamless System Connectivity',
+      description: 'Connect your account to 100+ HVAC tools and services for real-time sync of orders, quotes, and service logs.',
       action: 'View integrations',
       gradient: 'from-orange-500 to-amber-600',
       hoverColor: 'hover:border-orange-500/60 hover:shadow-orange-500/30',
@@ -395,8 +395,8 @@ const AudienceSelection = () => {
     },
     {
       icon: BarChart3,
-      title: 'Real-Time Insights',
-      description: 'Monitor productivity, track KPIs, and visualize workflow ROI with live dashboards and actionable analytics.',
+      title: 'Live Performance Dashboards',
+      description: 'Monitor order statuses, project KPIs, and energy savings metrics with instant analytics.',
       action: 'See analytics',
       gradient: 'from-blue-600 to-cyan-600',
       hoverColor: 'hover:border-blue-600/60 hover:shadow-blue-600/30',
@@ -571,10 +571,10 @@ const AudienceSelection = () => {
                     />
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
-                    Supercharge your workflow
+                    Power Up Every HVAC Role
                   </h2>
                   <p className="text-white/70 text-sm font-light leading-relaxed max-w-lg mx-auto">
-                    Automate, connect, and scale with HVAC Pro. Discover how our integration platform powers high-performing teams.
+                    Get the tools, insights, and integrations you need—tailored for homeowners, businesses, and contractors.
                   </p>
                 </div>
 
