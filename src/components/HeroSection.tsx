@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,6 @@ const HeroSection = () => {
       const canvas = document.getElementById('globeCanvas');
       console.log('Canvas found:', canvas);
       console.log('THREE loaded:', !!window.THREE);
-      console.log('Canvas dimensions:', canvas?.offsetWidth, 'x', canvas?.offsetHeight);
       
       if (!canvas || !window.THREE) return;
 
@@ -38,43 +36,117 @@ const HeroSection = () => {
           antialias: true
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x000000, 0); // Transparent background
+        renderer.setClearColor(0x000000, 0);
         
         const scene = new window.THREE.Scene();
         const camera = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         
-        // Create a more visible globe with solid material
+        // Create Earth texture using a simple procedural approach
+        const canvas2D = document.createElement('canvas');
+        canvas2D.width = 512;
+        canvas2D.height = 256;
+        const ctx = canvas2D.getContext('2d');
+        
+        // Create a simple Earth-like texture
+        if (ctx) {
+          // Ocean background
+          ctx.fillStyle = '#1e40af';
+          ctx.fillRect(0, 0, 512, 256);
+          
+          // Simple landmass shapes (approximating continents)
+          ctx.fillStyle = '#22c55e';
+          
+          // North America approximation
+          ctx.beginPath();
+          ctx.ellipse(120, 80, 60, 40, 0, 0, 2 * Math.PI);
+          ctx.fill();
+          
+          // South America approximation
+          ctx.beginPath();
+          ctx.ellipse(140, 160, 25, 50, 0, 0, 2 * Math.PI);
+          ctx.fill();
+          
+          // Europe/Africa approximation
+          ctx.beginPath();
+          ctx.ellipse(280, 100, 40, 60, 0, 0, 2 * Math.PI);
+          ctx.fill();
+          
+          // Asia approximation
+          ctx.beginPath();
+          ctx.ellipse(380, 80, 70, 45, 0, 0, 2 * Math.PI);
+          ctx.fill();
+          
+          // Australia approximation
+          ctx.beginPath();
+          ctx.ellipse(420, 180, 30, 20, 0, 0, 2 * Math.PI);
+          ctx.fill();
+        }
+        
+        const texture = new window.THREE.CanvasTexture(canvas2D);
+        
+        // Create globe with the texture
         const globe = new window.THREE.Mesh(
-          new window.THREE.SphereGeometry(1.2, 32, 32), // Slightly larger
+          new window.THREE.SphereGeometry(1.5, 64, 32),
           new window.THREE.MeshBasicMaterial({ 
-            color: 0x60a5fa, // Brighter blue
-            wireframe: true,
-            wireframeLinewidth: 3
+            map: texture,
+            transparent: true,
+            opacity: 0.7
           })
         );
         scene.add(globe);
         
-        // Position camera closer
-        camera.position.set(0, 0, 3);
+        // Add subtle ambient light
+        const ambientLight = new window.THREE.AmbientLight(0x404040, 0.4);
+        scene.add(ambientLight);
+        
+        // Start camera far away and small globe
+        camera.position.set(0, 0, 15);
+        globe.scale.setScalar(0.1);
         camera.lookAt(0, 0, 0);
         
-        console.log('Globe created and added to scene');
-        console.log('Camera position:', camera.position);
-        console.log('Globe position:', globe.position);
+        console.log('Globe with texture created');
         
         let animationId: number;
+        let startTime = Date.now();
+        const animationDuration = 4000; // 4 seconds
         
         function animate() {
-          // Simple continuous rotation
-          globe.rotation.y += 0.01;
-          globe.rotation.x += 0.005;
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / animationDuration, 1);
+          
+          // Easing function for smooth animation
+          const easeInOut = (t: number) => t * t * (3.0 - 2.0 * t);
+          const easedProgress = easeInOut(progress);
+          
+          // Zoom in animation
+          const startZ = 15;
+          const endZ = 4;
+          camera.position.z = startZ + (endZ - startZ) * easedProgress;
+          
+          // Scale up the globe
+          const startScale = 0.1;
+          const endScale = 1;
+          const currentScale = startScale + (endScale - startScale) * easedProgress;
+          globe.scale.setScalar(currentScale);
+          
+          // Rotate globe - faster at start, slower at end
+          const rotationSpeed = 0.02 * (1 - easedProgress * 0.8);
+          globe.rotation.y += rotationSpeed;
+          
+          // Focus on North America (rotate to show it prominently)
+          if (progress > 0.7) {
+            const focusProgress = (progress - 0.7) / 0.3;
+            const targetRotationY = -Math.PI * 0.3; // Show North America
+            globe.rotation.y += (targetRotationY - globe.rotation.y) * focusProgress * 0.02;
+            globe.rotation.x = Math.sin(focusProgress * Math.PI) * 0.1;
+          }
           
           renderer.render(scene, camera);
           animationId = requestAnimationFrame(animate);
         }
         
         animate();
-        console.log('Animation loop started');
+        console.log('Globe animation started with zoom and focus sequence');
         
         const handleResize = () => {
           renderer.setSize(window.innerWidth, window.innerHeight);
@@ -91,6 +163,7 @@ const HeroSection = () => {
             cancelAnimationFrame(animationId);
           }
           renderer.dispose();
+          texture.dispose();
         };
       } catch (error) {
         console.error('Failed to initialize Three.js globe:', error);
@@ -112,13 +185,13 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen bg-slate-900 overflow-hidden font-inter section-wave">
-      {/* Simple Globe Canvas - positioned behind content */}
+      {/* Globe Canvas - positioned behind content */}
       <canvas 
         id="globeCanvas" 
         className="absolute inset-0 w-full h-full hidden sm:block"
         style={{ 
           zIndex: 1,
-          opacity: 0.3,
+          opacity: 0.4,
           pointerEvents: 'none'
         }}
       />
