@@ -15,7 +15,7 @@ const HeroSection = () => {
     if (prefersReducedMotion || isMobile) return;
 
     let phi = 0;
-    let scale = 1.8; // Start zoomed in on North America
+    let scale = 2.2; // Start zoomed in closer on North America
     let isRotating = false;
 
     // Load COBE library and initialize globe
@@ -94,11 +94,11 @@ const HeroSection = () => {
       if (scrollY > scrollThreshold) {
         // Gradually zoom out and start rotating
         const scrollProgress = Math.min((scrollY - scrollThreshold) / windowHeight, 1);
-        scale = 1.8 - (scrollProgress * 0.6); // Zoom out from 1.8 to 1.2
+        scale = 2.2 - (scrollProgress * 0.8); // Zoom out from 2.2 to 1.4
         isRotating = scrollProgress > 0.3; // Start rotating after 30% scroll progress
       } else {
         // Reset to initial state
-        scale = 1.8;
+        scale = 2.2;
         isRotating = false;
         phi = 0; // Reset rotation
       }
@@ -131,15 +131,15 @@ const HeroSection = () => {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-800/30 via-slate-900/50 to-slate-900/70" style={{ zIndex: 3 }} />
 
-      {/* Globe - positioned behind text content */}
-      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 hidden lg:block" style={{ zIndex: 10 }}>
-        <div className="relative h-[600px] w-[600px]">
+      {/* Globe - positioned behind everything */}
+      <div className="absolute inset-0 flex items-center justify-end pr-8 hidden lg:flex" style={{ zIndex: 5 }}>
+        <div className="relative h-[700px] w-[700px]">
           {/* Glow effect behind globe */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 rounded-full blur-3xl"></div>
           {/* COBE Globe Canvas */}
           <canvas
             ref={canvasRef}
-            style={{ width: '600px', height: '600px' }}
+            style={{ width: '700px', height: '700px' }}
             width="1000"
             height="1000"
             className="relative z-10"
@@ -149,8 +149,8 @@ const HeroSection = () => {
 
       <div className="relative container mx-auto px-4 py-16 lg:py-24" style={{ zIndex: 20 }}>
         <div className="flex flex-col lg:flex-row items-center">
-          {/* Text Content - now in front of globe */}
-          <div className="lg:w-3/5 mb-12 lg:mb-0 lg:pr-12 animate-fade-in relative z-30">
+          {/* Text Content - now properly overlaying globe */}
+          <div className="lg:w-full mb-12 lg:mb-0 animate-fade-in relative z-30">
             {/* Headline */}
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-light leading-tight mb-6 text-white">
               <span className="bg-blue-gradient bg-clip-text text-transparent">
