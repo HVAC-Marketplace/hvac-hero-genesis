@@ -14,7 +14,7 @@ const HeroSection = () => {
   useEffect(() => {
     // Only initialize globe on desktop and when user doesn't prefer reduced motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobile = window.innerWidth < 768;
+    const isMobile = window.innerWidth < 640;
     
     if (prefersReducedMotion || isMobile) return;
 
@@ -26,40 +26,85 @@ const HeroSection = () => {
       if (!canvas || !window.THREE) return;
 
       try {
-        const r = new window.THREE.WebGLRenderer({ canvas, alpha: true });
-        r.setSize(window.innerWidth, window.innerHeight);
-        const s = new window.THREE.Scene();
-        const c = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        c.position.z = 3.2;
+        const renderer = new window.THREE.WebGLRenderer({ canvas, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        const scene = new window.THREE.Scene();
+        const camera = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         
-        const g = new window.THREE.SphereGeometry(1, 64, 64);
-        const m = new window.THREE.MeshStandardMaterial({ color: 0x3b82f6, wireframe: true });
-        const globe = new window.THREE.Mesh(g, m);
-        s.add(globe);
+        // Define initial and target camera positions (spherical coordinates)
+        const initialPos = { r: 3.2, phi: 0, theta: 0 };
+        const targetPos = { r: 1.8, phi: Math.PI / 4, theta: -Math.PI / 2 }; // Focus on North America
         
+        // Set initial camera position
+        camera.position.setFromSpherical(new window.THREE.Spherical(initialPos.r, initialPos.phi, initialPos.theta));
+        camera.lookAt(0, 0, 0);
+        
+        // Create globe
+        const globe = new window.THREE.Mesh(
+          new window.THREE.SphereGeometry(1, 64, 64),
+          new window.THREE.MeshStandardMaterial({ color: 0x3b82f6, wireframe: true })
+        );
+        scene.add(globe);
+        
+        // Add lighting
         const light = new window.THREE.PointLight(0xffffff, 1);
         light.position.set(5, 3, 5);
-        s.add(light);
+        scene.add(light);
         
-        function animate() {
-          requestAnimationFrame(animate);
-          globe.rotation.y += 0.002;
-          r.render(s, c);
+        let start = performance.now();
+        let animationId: number;
+        
+        function animate(time: number) {
+          const t = (time - start) / 1000; // Time in seconds
+          
+          if (t < 2) {
+            // Phase 1: Slow global spin for 2 seconds
+            globe.rotation.y += 0.001;
+          } else if (t < 6) {
+            // Phase 2: Zoom and pan to North America over 4 seconds (2-6s)
+            const u = (t - 2) / 4; // Normalized progress (0-1)
+            
+            // Smooth easing function
+            const easedU = u * u * (3 - 2 * u); // smoothstep
+            
+            // Interpolate spherical coordinates
+            const r = initialPos.r + (targetPos.r - initialPos.r) * easedU;
+            const phi = initialPos.phi + (targetPos.phi - initialPos.phi) * easedU;
+            const theta = initialPos.theta + (targetPos.theta - initialPos.theta) * easedU;
+            
+            camera.position.setFromSpherical(new window.THREE.Spherical(r, phi, theta));
+            camera.lookAt(0, 0, 0);
+            
+            // Continue slow rotation during zoom
+            globe.rotation.y += 0.001;
+          }
+          // Phase 3: After 6 seconds, stop all animation and hold position
+          
+          renderer.render(scene, camera);
+          
+          // Continue animation for first 6 seconds only
+          if (t < 6) {
+            animationId = requestAnimationFrame(animate);
+          }
         }
-        animate();
+        
+        animationId = requestAnimationFrame(animate);
         
         const handleResize = () => {
-          r.setSize(window.innerWidth, window.innerHeight);
-          c.aspect = window.innerWidth / window.innerHeight;
-          c.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
         };
         
         window.addEventListener('resize', handleResize);
         
-        // Cleanup function stored for later use
+        // Cleanup function
         return () => {
           window.removeEventListener('resize', handleResize);
-          r.dispose();
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+          }
+          renderer.dispose();
         };
       } catch (error) {
         console.warn('Failed to initialize Three.js globe:', error);
@@ -81,7 +126,7 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen bg-slate-900 overflow-hidden font-inter section-wave">
-      {/* Rotating Globe Canvas */}
+      {/* North America-Focused Globe Canvas */}
       <canvas 
         id="globeCanvas" 
         className="absolute inset-0 w-full h-full -z-10 hidden md:block"
