@@ -31,7 +31,7 @@ const AudienceSelection = () => {
       // @ts-ignore
       const renderer = new THREE.WebGLRenderer({canvas, alpha: true});
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setClearColor(0x000000, 0); // Transparent background
+      renderer.setClearColor(0x000000, 0);
       
       // @ts-ignore
       const scene = new THREE.Scene();
@@ -39,7 +39,6 @@ const AudienceSelection = () => {
       const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
       camera.position.z = 2;
 
-      // Simple animated gradient geometry
       // @ts-ignore
       const geometry = new THREE.PlaneGeometry(6, 6);
       // @ts-ignore
@@ -72,7 +71,7 @@ const AudienceSelection = () => {
           }
         `,
         transparent: true,
-        side: 2 // Double sided
+        side: 2
       });
 
       // @ts-ignore
@@ -109,7 +108,6 @@ const AudienceSelection = () => {
     // Load Three.js and initialize
     const existingScript = document.querySelector('script[src*="three.min.js"]');
     if (existingScript) {
-      // Three.js already loaded
       if (window.THREE) {
         initShaderBackground();
       }
@@ -118,7 +116,7 @@ const AudienceSelection = () => {
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
       script.onload = () => {
         console.log('Three.js loaded successfully');
-        setTimeout(initShaderBackground, 100); // Small delay to ensure DOM is ready
+        setTimeout(initShaderBackground, 100);
       };
       script.onerror = () => {
         console.error('Failed to load Three.js');
@@ -135,7 +133,7 @@ const AudienceSelection = () => {
   }, []);
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Animated Shader Background */}
       <canvas 
         id="branchShader" 
@@ -150,36 +148,65 @@ const AudienceSelection = () => {
         }}
       ></canvas>
 
+      {/* Glass morphism overlay */}
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm z-5"></div>
+
       <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8 relative z-10">
-        <div className="max-w-2xl w-full mx-auto text-center">
-          <h1 className="text-4xl font-medium text-white mb-2">
-            Welcome to HVAC Marketplace
-          </h1>
-          <p className="text-lg font-light text-gray-200 mb-8">
-            Please select your role to continue
-          </p>
-          
-          <div className="space-y-4">
-            <button
-              onClick={() => handleAudienceSelection('homeowner')}
-              className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Homeowners & Residential
-            </button>
+        <div className="max-w-md w-full mx-auto">
+          {/* Glass morphism card */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 shadow-2xl">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-light text-white mb-3 tracking-wide">
+                Welcome
+              </h1>
+              <p className="text-white/70 text-sm font-light leading-relaxed">
+                Choose your role to access the appropriate features and experience
+              </p>
+            </div>
             
-            <button
-              onClick={() => handleAudienceSelection('business')}
-              className="w-full px-6 py-4 border-2 border-blue-600 text-blue-100 bg-white/10 hover:bg-white/20 rounded-lg text-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Businesses & Organizations
-            </button>
-            
-            <button
-              onClick={() => handleAudienceSelection('contractor')}
-              className="w-full px-6 py-4 text-blue-200 hover:text-white underline bg-transparent text-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg"
-            >
-              Professional Contractors & Technicians
-            </button>
+            {/* Selection buttons */}
+            <div className="space-y-3">
+              <button
+                onClick={() => handleAudienceSelection('homeowner')}
+                className="w-full group relative overflow-hidden bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/20 hover:border-white/30 rounded-2xl p-4 text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30"
+              >
+                <div className="relative z-10">
+                  <div className="text-white font-medium mb-1">Homeowners</div>
+                  <div className="text-white/60 text-xs">Residential solutions</div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              </button>
+              
+              <button
+                onClick={() => handleAudienceSelection('business')}
+                className="w-full group relative overflow-hidden bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-white/20 hover:border-white/30 rounded-2xl p-4 text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30"
+              >
+                <div className="relative z-10">
+                  <div className="text-white font-medium mb-1">Businesses</div>
+                  <div className="text-white/60 text-xs">Commercial & organizations</div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              </button>
+              
+              <button
+                onClick={() => handleAudienceSelection('contractor')}
+                className="w-full group relative overflow-hidden bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-white/20 hover:border-white/30 rounded-2xl p-4 text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30"
+              >
+                <div className="relative z-10">
+                  <div className="text-white font-medium mb-1">Contractors</div>
+                  <div className="text-white/60 text-xs">Professional technicians</div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              </button>
+            </div>
+
+            {/* Footer */}
+            <div className="mt-8 pt-6 border-t border-white/10">
+              <p className="text-center text-white/50 text-xs">
+                HVAC Marketplace Platform
+              </p>
+            </div>
           </div>
         </div>
       </div>
