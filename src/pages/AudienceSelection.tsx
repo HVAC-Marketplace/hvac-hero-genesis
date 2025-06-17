@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,7 +18,7 @@ const AudienceSelection = () => {
         return;
       }
 
-      // @ts-ignore
+      // @ts-ignore - THREE.js loaded via CDN
       if (!window.THREE) {
         console.error('Three.js not loaded');
         return;
@@ -27,27 +26,27 @@ const AudienceSelection = () => {
 
       console.log('Creating Three.js scene with flowing beams...');
       
-      // @ts-ignore
-      const scene = new THREE.Scene();
-      // @ts-ignore
-      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-      // @ts-ignore
-      const renderer = new THREE.WebGLRenderer({ 
+      // @ts-ignore - THREE.js loaded via CDN
+      const scene = new window.THREE.Scene();
+      // @ts-ignore - THREE.js loaded via CDN
+      const camera = new window.THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      // @ts-ignore - THREE.js loaded via CDN
+      const renderer = new window.THREE.WebGLRenderer({ 
         canvas, 
         alpha: true,
         antialias: true
       });
       
       const uniforms = {
-        // @ts-ignore
+        // @ts-ignore - THREE.js loaded via CDN
         iTime: { value: 0 },
-        // @ts-ignore
-        iResolution: { value: new THREE.Vector2() }
+        // @ts-ignore - THREE.js loaded via CDN
+        iResolution: { value: new window.THREE.Vector2() }
       };
 
-      // Simplified but more visible shader based on the Nexus reference
-      // @ts-ignore
-      const material = new THREE.ShaderMaterial({
+      // Enhanced shader with bottom-right anchor and brighter beams
+      // @ts-ignore - THREE.js loaded via CDN
+      const material = new window.THREE.ShaderMaterial({
         uniforms,
         vertexShader: `
           void main() {
@@ -58,47 +57,64 @@ const AudienceSelection = () => {
           uniform vec2 iResolution;
           uniform float iTime;
           
-          float strength(vec2 src, vec2 dir, vec2 c, float a, float b, float s) {
-            vec2 d = c - src;
-            float cosang = dot(normalize(d), dir);
-            return clamp((0.45 + 0.15 * sin(cosang * a + iTime * s)) + (0.3 + 0.2 * cos(-cosang * b + iTime * s)), 0.0, 1.0) *
-                   clamp((iResolution.x - length(d)) / iResolution.x, 0.5, 1.0);
+          float beam(vec2 origin, vec2 direction, vec2 position, float width, float intensity) {
+            vec2 toPoint = position - origin;
+            float projLength = dot(toPoint, direction);
+            vec2 projection = origin + direction * max(0.0, projLength);
+            float distance = length(position - projection);
+            
+            float falloff = 1.0 / (1.0 + distance * distance * width);
+            float lengthFalloff = 1.0 / (1.0 + projLength * projLength * 0.0001);
+            
+            return falloff * lengthFalloff * intensity;
           }
           
           void main() {
-            vec2 c = gl_FragCoord.xy;
-            vec2 res = iResolution;
+            vec2 uv = gl_FragCoord.xy / iResolution.xy;
+            vec2 pos = gl_FragCoord.xy;
             
-            // Two main light beams similar to Nexus
-            vec2 p1 = res * vec2(0.7, -0.4);
-            vec2 d1 = normalize(vec2(1.0, -0.116));
-            vec2 p2 = res * vec2(0.8, -0.6);
-            vec2 d2 = normalize(vec2(1.0, 0.241));
+            // Light source anchored at bottom right (80% from left, 10% from bottom)
+            vec2 lightSource = vec2(iResolution.x * 0.8, iResolution.y * 0.1);
             
-            vec4 col = vec4(0.0);
+            vec3 color = vec3(0.0);
             
-            // First beam - blue/cyan
-            col += vec4(1.0) * strength(p1, d1, c, 36.22, 21.11, 1.5) * 0.5;
+            // Multiple beams emanating from the light source
+            // Main beam going up and left
+            vec2 dir1 = normalize(vec2(-0.6, 0.8));
+            color += vec3(0.3, 0.6, 1.0) * beam(lightSource, dir1, pos, 0.002, 0.8);
             
-            // Second beam - purple/magenta
-            col += vec4(1.0) * strength(p2, d2, c, 22.39, 18.02, 1.1) * 0.4;
+            // Secondary beam going more left
+            vec2 dir2 = normalize(vec2(-0.8, 0.6));
+            color += vec3(0.6, 0.3, 1.0) * beam(lightSource, dir2, pos, 0.003, 0.6);
             
-            // Color gradient based on screen position
-            float brightness = 1.0 - (c.y / res.y);
-            col.x *= 0.1 + brightness * 0.8; // More blue at top
-            col.y *= 0.3 + brightness * 0.6; // Some green
-            col.z *= 0.5 + brightness * 0.5; // Purple tint
+            // Third beam going straight up
+            vec2 dir3 = normalize(vec2(-0.4, 0.9));
+            color += vec3(0.4, 0.8, 1.0) * beam(lightSource, dir3, pos, 0.0025, 0.7);
             
-            // Increase overall brightness
-            gl_FragColor = col * 0.25;
+            // Fourth beam with slight animation
+            float angle = iTime * 0.2;
+            vec2 dir4 = normalize(vec2(-0.7 + sin(angle) * 0.1, 0.7 + cos(angle) * 0.1));
+            color += vec3(0.8, 0.4, 1.0) * beam(lightSource, dir4, pos, 0.004, 0.5);
+            
+            // Add some glow around the light source
+            float distToSource = length(pos - lightSource);
+            float sourceGlow = 0.3 / (1.0 + distToSource * distToSource * 0.00001);
+            color += vec3(0.5, 0.7, 1.0) * sourceGlow;
+            
+            // Increase overall brightness and add subtle gradient
+            float brightness = 1.0 - (uv.y * 0.3);
+            color *= brightness * 2.0; // Doubled brightness
+            
+            gl_FragColor = vec4(color, 1.0);
           }
         `,
         transparent: true,
-        blending: THREE.AdditiveBlending
+        // @ts-ignore - THREE.js loaded via CDN
+        blending: window.THREE.AdditiveBlending
       });
 
-      // @ts-ignore
-      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+      // @ts-ignore - THREE.js loaded via CDN
+      const mesh = new window.THREE.Mesh(new window.THREE.PlaneGeometry(2, 2), material);
       scene.add(mesh);
 
       const resize = () => {
@@ -137,7 +153,7 @@ const AudienceSelection = () => {
     // Load Three.js and initialize
     const existingScript = document.querySelector('script[src*="three.min.js"]');
     if (existingScript) {
-      // @ts-ignore
+      // @ts-ignore - THREE.js loaded via CDN
       if (window.THREE) {
         const cleanup = initShaderBackground();
         return cleanup;
