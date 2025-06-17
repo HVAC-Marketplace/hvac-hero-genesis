@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 const InteractiveSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -18,6 +19,7 @@ const InteractiveSection = () => {
         if (entry.isIntersecting && entry.intersectionRatio > 0.2) {
           console.log('Setting isVisible to true');
           setIsVisible(true);
+          setAnimationKey(prev => prev + 1); // Force animation restart
         } else {
           console.log('Setting isVisible to false');
           setIsVisible(false);
@@ -49,7 +51,7 @@ const InteractiveSection = () => {
     return () => observer.disconnect();
   }, []);
 
-  console.log('InteractiveSection render - isVisible:', isVisible);
+  console.log('InteractiveSection render - isVisible:', isVisible, 'animationKey:', animationKey);
 
   return (
     <section 
@@ -72,7 +74,7 @@ const InteractiveSection = () => {
       </div>
 
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center p-8 max-w-4xl mx-auto">
+        <div key={animationKey} className="text-center p-8 max-w-4xl mx-auto">
           
           {/* SLIDE 1: Main headline slides in from FAR LEFT */}
           <h2 className={`text-6xl md:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1200 ease-out ${
