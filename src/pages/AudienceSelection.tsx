@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Building, Wrench } from 'lucide-react';
+import { Home, Building, Wrench, Zap } from 'lucide-react';
 
 const AudienceSelection = () => {
   const navigate = useNavigate();
@@ -402,66 +402,68 @@ const AudienceSelection = () => {
 
       {/* Content overlay */}
       <div className="min-h-screen flex flex-col justify-center items-center px-6 py-8 relative z-10">
-        <div className="max-w-4xl w-full mx-auto">
-          {/* Main Glass Portal Container - Reduced size */}
-          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+        <div className="max-w-3xl w-full mx-auto">
+          {/* Main Glass Portal Container - Condensed size */}
+          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl">
             {/* Header */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-xl rounded-2xl mb-4 border border-white/20">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-blue-500 rounded-xl flex items-center justify-center">
-                  <div className="w-6 h-6 bg-white/20 rounded-lg"></div>
+            <div className="text-center mb-6">
+              {/* Brand Logo */}
+              <div className="inline-flex items-center justify-center w-14 h-14 bg-white/10 backdrop-blur-xl rounded-2xl mb-3 border border-white/20">
+                <div className="relative">
+                  <Zap className="w-8 h-8 text-orange-400" />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full"></div>
                 </div>
               </div>
-              <h1 className="text-3xl font-light text-white mb-3 tracking-wide">
-                Enter the HVAC Portal
+              <h1 className="text-2xl font-light text-white mb-2 tracking-wide">
+                Welcome to the HVAC Marketplace
               </h1>
-              <p className="text-white/70 text-base font-light leading-relaxed max-w-xl mx-auto">
+              <p className="text-white/70 text-sm font-light leading-relaxed max-w-lg mx-auto">
                 Experience the future of HVAC marketplace with our advanced glassmorphism interface. 
                 Choose your role to access tailored solutions.
               </p>
             </div>
 
             {/* Features List */}
-            <div className="flex justify-center items-center gap-6 mb-8 text-sm">
+            <div className="flex justify-center items-center gap-4 mb-6 text-xs">
               <div className="flex items-center text-white/60">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></div>
                 <span>Military-grade security</span>
               </div>
               <div className="flex items-center text-white/60">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
+                <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mr-2"></div>
                 <span>Lightning-fast access</span>
               </div>
               <div className="flex items-center text-white/60">
-                <div className="w-2 h-2 bg-purple-400 rounded-full mr-2"></div>
+                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2"></div>
                 <span>Premium experience</span>
               </div>
             </div>
             
-            {/* Vertical Portal Cards - Reduced size */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Vertical Portal Cards - Condensed */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {audienceOptions.map((option) => (
                 <button
                   key={option.id}
                   onClick={() => handleAudienceSelection(option.id)}
-                  className={`group relative overflow-hidden bg-gradient-to-b ${option.gradient} border border-white/20 hover:border-white/30 rounded-3xl p-6 text-center transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/30 hover:scale-105 hover:shadow-2xl`}
-                  style={{ minHeight: '280px' }}
+                  className={`group relative overflow-hidden bg-gradient-to-b ${option.gradient} border border-white/20 hover:border-white/30 rounded-2xl p-4 text-center transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/30 hover:scale-105 hover:shadow-2xl`}
+                  style={{ minHeight: '220px' }}
                 >
                   <div className="relative z-10 flex flex-col items-center h-full">
                     {/* Icon */}
-                    <div className="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-4 border border-white/20 group-hover:bg-white/20 transition-all duration-300">
-                      <option.icon className="w-6 h-6 text-white" />
+                    <div className="w-10 h-10 bg-white/10 backdrop-blur-xl rounded-xl flex items-center justify-center mb-3 border border-white/20 group-hover:bg-white/20 transition-all duration-300">
+                      <option.icon className="w-5 h-5 text-white" />
                     </div>
                     
                     {/* Content */}
                     <div className="flex-grow flex flex-col justify-center">
-                      <h3 className="text-xl font-semibold text-white mb-2">{option.title}</h3>
-                      <p className="text-white/60 text-sm mb-3">{option.subtitle}</p>
-                      <p className="text-white/50 text-xs leading-relaxed mb-4">{option.description}</p>
+                      <h3 className="text-lg font-semibold text-white mb-1">{option.title}</h3>
+                      <p className="text-white/60 text-xs mb-2">{option.subtitle}</p>
+                      <p className="text-white/50 text-xs leading-relaxed mb-3">{option.description}</p>
                     </div>
                     
                     {/* Sign In Button */}
                     <div className="w-full">
-                      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white font-medium group-hover:bg-white/20 group-hover:border-white/30 transition-all duration-300 text-sm">
+                      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg px-3 py-2 text-white font-medium group-hover:bg-white/20 group-hover:border-white/30 transition-all duration-300 text-xs">
                         Sign in securely →
                       </div>
                     </div>
@@ -474,11 +476,11 @@ const AudienceSelection = () => {
             </div>
 
             {/* Footer */}
-            <div className="mt-8 pt-6 border-t border-white/10 text-center">
-              <p className="text-white/40 text-sm mb-3">
+            <div className="mt-6 pt-4 border-t border-white/10 text-center">
+              <p className="text-white/40 text-xs mb-2">
                 New to HVAC Portal? <span className="text-white/60 underline cursor-pointer">Create your account</span>
               </p>
-              <div className="flex justify-center space-x-6 text-xs text-white/30">
+              <div className="flex justify-center space-x-4 text-xs text-white/30">
                 <span className="hover:text-white/50 cursor-pointer">Privacy Policy</span>
                 <span>•</span>
                 <span className="hover:text-white/50 cursor-pointer">Terms of Service</span>
