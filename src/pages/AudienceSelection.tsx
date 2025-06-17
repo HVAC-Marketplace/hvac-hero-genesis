@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -295,10 +296,6 @@ const AudienceSelection = () => {
         setTimeout(() => {
           const cleanupShader = initShaderBackground();
           const cleanupAurora = initAuroraBackground();
-          return () => {
-            if (cleanupShader) cleanupShader();
-            if (cleanupAurora) cleanupAurora();
-          };
         }, 100);
       };
       script.onerror = () => {
