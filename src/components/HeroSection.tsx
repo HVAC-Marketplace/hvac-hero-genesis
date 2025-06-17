@@ -3,6 +3,13 @@ import React, { useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+// Extend Window interface to include THREE
+declare global {
+  interface Window {
+    THREE: any;
+  }
+}
+
 const HeroSection = () => {
   useEffect(() => {
     // Only initialize globe on desktop and when user doesn't prefer reduced motion
@@ -18,41 +25,49 @@ const HeroSection = () => {
       const canvas = document.getElementById('globeCanvas');
       if (!canvas || !window.THREE) return;
 
-      const r = new window.THREE.WebGLRenderer({ canvas, alpha: true });
-      r.setSize(window.innerWidth, window.innerHeight);
-      const s = new window.THREE.Scene();
-      const c = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-      c.position.z = 3.2;
-      
-      const g = new window.THREE.SphereGeometry(1, 64, 64);
-      const m = new window.THREE.MeshStandardMaterial({ color: 0x3b82f6, wireframe: true });
-      const globe = new window.THREE.Mesh(g, m);
-      s.add(globe);
-      
-      const light = new window.THREE.PointLight(0xffffff, 1);
-      light.position.set(5, 3, 5);
-      s.add(light);
-      
-      function animate() {
-        requestAnimationFrame(animate);
-        globe.rotation.y += 0.002;
-        r.render(s, c);
-      }
-      animate();
-      
-      const handleResize = () => {
+      try {
+        const r = new window.THREE.WebGLRenderer({ canvas, alpha: true });
         r.setSize(window.innerWidth, window.innerHeight);
-        c.aspect = window.innerWidth / window.innerHeight;
-        c.updateProjectionMatrix();
-      };
-      
-      window.addEventListener('resize', handleResize);
-      
-      // Cleanup function
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        r.dispose();
-      };
+        const s = new window.THREE.Scene();
+        const c = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        c.position.z = 3.2;
+        
+        const g = new window.THREE.SphereGeometry(1, 64, 64);
+        const m = new window.THREE.MeshStandardMaterial({ color: 0x3b82f6, wireframe: true });
+        const globe = new window.THREE.Mesh(g, m);
+        s.add(globe);
+        
+        const light = new window.THREE.PointLight(0xffffff, 1);
+        light.position.set(5, 3, 5);
+        s.add(light);
+        
+        function animate() {
+          requestAnimationFrame(animate);
+          globe.rotation.y += 0.002;
+          r.render(s, c);
+        }
+        animate();
+        
+        const handleResize = () => {
+          r.setSize(window.innerWidth, window.innerHeight);
+          c.aspect = window.innerWidth / window.innerHeight;
+          c.updateProjectionMatrix();
+        };
+        
+        window.addEventListener('resize', handleResize);
+        
+        // Cleanup function stored for later use
+        return () => {
+          window.removeEventListener('resize', handleResize);
+          r.dispose();
+        };
+      } catch (error) {
+        console.warn('Failed to initialize Three.js globe:', error);
+      }
+    };
+    
+    script.onerror = () => {
+      console.warn('Failed to load Three.js library');
     };
     
     document.head.appendChild(script);
