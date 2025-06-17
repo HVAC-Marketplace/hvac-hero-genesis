@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Building, Wrench } from 'lucide-react';
@@ -347,7 +348,7 @@ const AudienceSelection = () => {
       subtitle: 'Residential solutions',
       description: 'Access your secure dashboard for home HVAC services',
       icon: Home,
-      gradient: 'from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30'
+      gradient: 'from-blue-400/15 to-blue-600/15 hover:from-blue-400/25 hover:to-blue-600/25'
     },
     {
       id: 'business',
@@ -355,7 +356,7 @@ const AudienceSelection = () => {
       subtitle: 'Commercial solutions',
       description: 'Manage your organization\'s HVAC infrastructure',
       icon: Building,
-      gradient: 'from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30'
+      gradient: 'from-white/10 to-white/5 hover:from-white/15 hover:to-white/10'
     },
     {
       id: 'contractor',
@@ -363,7 +364,7 @@ const AudienceSelection = () => {
       subtitle: 'Professional tools',
       description: 'Professional technician dashboard and tools',
       icon: Wrench,
-      gradient: 'from-orange-500/20 to-amber-500/20 hover:from-orange-500/30 hover:to-amber-500/30'
+      gradient: 'from-orange-400/15 to-amber-500/15 hover:from-orange-400/25 hover:to-amber-500/25'
     }
   ];
 
@@ -401,66 +402,66 @@ const AudienceSelection = () => {
 
       {/* Content overlay */}
       <div className="min-h-screen flex flex-col justify-center items-center px-6 py-8 relative z-10">
-        <div className="max-w-6xl w-full mx-auto">
-          {/* Main Glass Portal Container */}
-          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-12 shadow-2xl">
+        <div className="max-w-4xl w-full mx-auto">
+          {/* Main Glass Portal Container - Reduced size */}
+          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl">
             {/* Header */}
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-xl rounded-2xl mb-6 border border-white/20">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-blue-500 rounded-xl flex items-center justify-center">
-                  <div className="w-8 h-8 bg-white/20 rounded-lg"></div>
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-xl rounded-2xl mb-4 border border-white/20">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-blue-500 rounded-xl flex items-center justify-center">
+                  <div className="w-6 h-6 bg-white/20 rounded-lg"></div>
                 </div>
               </div>
-              <h1 className="text-4xl font-light text-white mb-4 tracking-wide">
+              <h1 className="text-3xl font-light text-white mb-3 tracking-wide">
                 Enter the HVAC Portal
               </h1>
-              <p className="text-white/70 text-lg font-light leading-relaxed max-w-2xl mx-auto">
+              <p className="text-white/70 text-base font-light leading-relaxed max-w-xl mx-auto">
                 Experience the future of HVAC marketplace with our advanced glassmorphism interface. 
                 Choose your role to access tailored solutions.
               </p>
             </div>
 
             {/* Features List */}
-            <div className="flex justify-center items-center gap-8 mb-12 text-sm">
+            <div className="flex justify-center items-center gap-6 mb-8 text-sm">
               <div className="flex items-center text-white/60">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
                 <span>Military-grade security</span>
               </div>
               <div className="flex items-center text-white/60">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mr-3"></div>
+                <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
                 <span>Lightning-fast access</span>
               </div>
               <div className="flex items-center text-white/60">
-                <div className="w-2 h-2 bg-purple-400 rounded-full mr-3"></div>
+                <div className="w-2 h-2 bg-purple-400 rounded-full mr-2"></div>
                 <span>Premium experience</span>
               </div>
             </div>
             
-            {/* Vertical Portal Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Vertical Portal Cards - Reduced size */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {audienceOptions.map((option) => (
                 <button
                   key={option.id}
                   onClick={() => handleAudienceSelection(option.id)}
-                  className={`group relative overflow-hidden bg-gradient-to-b ${option.gradient} border border-white/20 hover:border-white/30 rounded-3xl p-8 text-center transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/30 hover:scale-105 hover:shadow-2xl`}
-                  style={{ minHeight: '400px' }}
+                  className={`group relative overflow-hidden bg-gradient-to-b ${option.gradient} border border-white/20 hover:border-white/30 rounded-3xl p-6 text-center transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/30 hover:scale-105 hover:shadow-2xl`}
+                  style={{ minHeight: '280px' }}
                 >
                   <div className="relative z-10 flex flex-col items-center h-full">
                     {/* Icon */}
-                    <div className="w-16 h-16 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 border border-white/20 group-hover:bg-white/20 transition-all duration-300">
-                      <option.icon className="w-8 h-8 text-white" />
+                    <div className="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-4 border border-white/20 group-hover:bg-white/20 transition-all duration-300">
+                      <option.icon className="w-6 h-6 text-white" />
                     </div>
                     
                     {/* Content */}
                     <div className="flex-grow flex flex-col justify-center">
-                      <h3 className="text-2xl font-semibold text-white mb-2">{option.title}</h3>
-                      <p className="text-white/60 text-sm mb-4">{option.subtitle}</p>
-                      <p className="text-white/50 text-xs leading-relaxed mb-6">{option.description}</p>
+                      <h3 className="text-xl font-semibold text-white mb-2">{option.title}</h3>
+                      <p className="text-white/60 text-sm mb-3">{option.subtitle}</p>
+                      <p className="text-white/50 text-xs leading-relaxed mb-4">{option.description}</p>
                     </div>
                     
                     {/* Sign In Button */}
                     <div className="w-full">
-                      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-3 text-white font-medium group-hover:bg-white/20 group-hover:border-white/30 transition-all duration-300">
+                      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white font-medium group-hover:bg-white/20 group-hover:border-white/30 transition-all duration-300 text-sm">
                         Sign in securely →
                       </div>
                     </div>
@@ -473,11 +474,11 @@ const AudienceSelection = () => {
             </div>
 
             {/* Footer */}
-            <div className="mt-12 pt-8 border-t border-white/10 text-center">
-              <p className="text-white/40 text-sm mb-4">
+            <div className="mt-8 pt-6 border-t border-white/10 text-center">
+              <p className="text-white/40 text-sm mb-3">
                 New to HVAC Portal? <span className="text-white/60 underline cursor-pointer">Create your account</span>
               </p>
-              <div className="flex justify-center space-x-8 text-xs text-white/30">
+              <div className="flex justify-center space-x-6 text-xs text-white/30">
                 <span className="hover:text-white/50 cursor-pointer">Privacy Policy</span>
                 <span>•</span>
                 <span className="hover:text-white/50 cursor-pointer">Terms of Service</span>
