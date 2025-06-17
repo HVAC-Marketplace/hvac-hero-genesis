@@ -252,7 +252,7 @@ export class EnhancedGlobe {
   createParticles() {
     const particleGeometry = new window.THREE.BufferGeometry();
     const positions = [];
-    const colors = [];
+    const particleColors = [];
     const sizes = [];
     
     // Create LED-style particles for each continent
@@ -267,25 +267,25 @@ export class EnhancedGlobe {
           dot.z * radius
         );
         
-        colors.push(color.r, color.g, color.b);
+        particleColors.push(color.r, color.g, color.b);
         sizes.push(this.options.particleSize);
       }
     }
     
     particleGeometry.setAttribute('position', new window.THREE.Float32BufferAttribute(positions, 3));
-    particleGeometry.setAttribute('color', new window.THREE.Float32BufferAttribute(colors, 3));
+    particleGeometry.setAttribute('particleColor', new window.THREE.Float32BufferAttribute(particleColors, 3));
     particleGeometry.setAttribute('size', new window.THREE.Float32BufferAttribute(sizes, 1));
     
     const particleMaterial = new window.THREE.ShaderMaterial({
       uniforms: { time: { value: 0 } },
       vertexShader: `
         attribute float size;
-        attribute vec3 color;
+        attribute vec3 particleColor;
         varying vec3 vColor;
         uniform float time;
         
         void main() {
-          vColor = color;
+          vColor = particleColor;
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
           
           // LED pulsing effect
@@ -309,8 +309,7 @@ export class EnhancedGlobe {
         }
       `,
       blending: window.THREE.AdditiveBlending,
-      transparent: true,
-      vertexColors: true
+      transparent: true
     });
     
     this.particles = new window.THREE.Points(particleGeometry, particleMaterial);
