@@ -31,7 +31,11 @@ const HeroSection = () => {
       if (!canvas || !window.THREE) return;
 
       try {
-        const renderer = new window.THREE.WebGLRenderer({ canvas, alpha: true });
+        const renderer = new window.THREE.WebGLRenderer({ 
+          canvas, 
+          alpha: true,
+          antialias: true
+        });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x000000, 0);
         
@@ -39,31 +43,30 @@ const HeroSection = () => {
         const camera = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         
         // Define initial and target camera positions (spherical coordinates)
-        const initialPos = { r: 3.2, phi: 0, theta: 0 };
-        const targetPos = { r: 1.8, phi: Math.PI / 4, theta: -Math.PI / 2 }; // Focus on North America
+        const initialPos = { r: 2.5, phi: 0, theta: 0 };
+        const targetPos = { r: 1.5, phi: Math.PI / 4, theta: -Math.PI / 2 }; // Focus on North America
         
         // Set initial camera position
         camera.position.setFromSpherical(new window.THREE.Spherical(initialPos.r, initialPos.phi, initialPos.theta));
         camera.lookAt(0, 0, 0);
         
-        // Create globe with more visible settings
+        // Create globe with solid material for better visibility
         const globe = new window.THREE.Mesh(
-          new window.THREE.SphereGeometry(1, 64, 64),
-          new window.THREE.MeshStandardMaterial({ 
-            color: 0x3b82f6, 
+          new window.THREE.SphereGeometry(1, 32, 32),
+          new window.THREE.MeshPhongMaterial({ 
+            color: 0x3b82f6,
             wireframe: true,
-            transparent: true,
-            opacity: 0.8  // Increased opacity
+            wireframeLinewidth: 2
           })
         );
         scene.add(globe);
         
-        // Add lighting
-        const ambientLight = new window.THREE.AmbientLight(0x404040, 0.8); // Increased intensity
+        // Add strong lighting
+        const ambientLight = new window.THREE.AmbientLight(0x404040, 1);
         scene.add(ambientLight);
         
-        const pointLight = new window.THREE.PointLight(0xffffff, 1.5); // Increased intensity
-        pointLight.position.set(5, 3, 5);
+        const pointLight = new window.THREE.PointLight(0xffffff, 2);
+        pointLight.position.set(10, 10, 10);
         scene.add(pointLight);
         
         console.log('Globe scene setup complete');
@@ -76,7 +79,7 @@ const HeroSection = () => {
           
           if (t < 2) {
             // Phase 1: Slow global spin for 2 seconds
-            globe.rotation.y += 0.002; // Slightly faster for visibility
+            globe.rotation.y += 0.005; // More visible rotation
           } else if (t < 6) {
             // Phase 2: Zoom and pan to North America over 4 seconds (2-6s)
             const u = (t - 2) / 4; // Normalized progress (0-1)
@@ -93,7 +96,7 @@ const HeroSection = () => {
             camera.lookAt(0, 0, 0);
             
             // Continue rotation during zoom
-            globe.rotation.y += 0.002;
+            globe.rotation.y += 0.005;
           }
           // Phase 3: After 6 seconds, stop all animation and hold position
           
@@ -147,8 +150,8 @@ const HeroSection = () => {
       {/* North America-Focused Globe Canvas */}
       <canvas 
         id="globeCanvas" 
-        className="absolute inset-0 w-full h-full -z-10 hidden sm:block"
-        style={{ filter: 'opacity(0.6)' }}
+        className="absolute inset-0 w-full h-full z-0 hidden sm:block"
+        style={{ opacity: 0.8 }}
       />
 
       {/* Background Pattern */}
@@ -162,7 +165,7 @@ const HeroSection = () => {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 via-slate-900/80 to-slate-900" />
 
-      <div className="relative container mx-auto px-4 py-16 lg:py-24">
+      <div className="relative container mx-auto px-4 py-16 lg:py-24 z-10">
         {/* Main Hero Content */}
         <div className="max-w-6xl mx-auto text-center animate-fade-in">
           {/* Headline */}
