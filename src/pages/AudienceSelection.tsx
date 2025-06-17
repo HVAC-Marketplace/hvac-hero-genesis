@@ -310,7 +310,7 @@ const AudienceSelection = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-black">
-      {/* Base Shader Background Canvas */}
+      {/* Base Shader Background Canvas - Flowing beams */}
       <canvas 
         id="shader-bg" 
         className="fixed inset-0 w-full h-full"
@@ -320,22 +320,22 @@ const AudienceSelection = () => {
           left: 0,
           width: '100vw',
           height: '100vh',
-          zIndex: 0,
+          zIndex: 1,
           pointerEvents: 'none'
         }}
       />
 
-      {/* Aurora Background Canvas - Above base layer */}
+      {/* Aurora Background Canvas - Above base layer but more transparent */}
       <canvas 
         id="aurora-bg" 
-        className="fixed inset-0 w-full h-full"
+        className="fixed inset-0 w-full h-full opacity-60"
         style={{ 
           position: 'fixed',
           top: 0,
           left: 0,
           width: '100vw',
           height: '100vh',
-          zIndex: 1,
+          zIndex: 2,
           pointerEvents: 'none'
         }}
       />
