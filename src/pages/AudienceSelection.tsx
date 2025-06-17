@@ -67,8 +67,7 @@ const AudienceSelection = () => {
             float distance = length(position - projection);
             
             // Tighter beam with higher contrast
-            float beamFalloff = exp(-distance * width);
-            // Gentle distance fade
+            float beamFalloff = exp(-distance * width);\n            // Gentle distance fade
             float lengthFalloff = exp(-projLength * 0.0005);
             
             return beamFalloff * lengthFalloff * intensity;
@@ -228,7 +227,7 @@ const AudienceSelection = () => {
               </button>
               
               <button
-                onClick={()={() => handleAudienceSelection('business')}
+                onClick={() => handleAudienceSelection('business')}
                 className="w-full group relative overflow-hidden bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-white/20 hover:border-white/30 rounded-2xl p-4 text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30"
               >
                 <div className="relative z-10">
