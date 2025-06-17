@@ -14,14 +14,14 @@ const HeroSection = () => {
     if (prefersReducedMotion || isMobile) return;
 
     let phi = 0;
-    let scale = 3.5; // Start zoomed in much closer on North America
+    let scale = 2.8; // Better zoom level to show North America prominently
     let isRotating = false;
 
     // Load COBE library and initialize globe
     const initializeGlobe = async () => {
       try {
-        // Import COBE from CDN using dynamic import
-        const cobeModule = await import('https://cdn.skypack.dev/cobe');
+        // Use dynamic import to avoid TypeScript module resolution issues
+        const cobeModule = await eval('import("https://cdn.skypack.dev/cobe")');
         const createGlobe = cobeModule.default;
         const canvas = canvasRef.current;
         
@@ -32,7 +32,7 @@ const HeroSection = () => {
 
         console.log('Initializing COBE globe...');
 
-        // Create globe with dark theme and consistent markers
+        // Create globe with dark theme - no custom markers, just the natural pixel grid
         globeRef.current = createGlobe(canvas, {
           devicePixelRatio: 2,
           width: 1000,
@@ -45,26 +45,10 @@ const HeroSection = () => {
           mapSamples: 16000,
           mapBrightness: 6,
           baseColor: [0.05, 0.05, 0.1], // Very dark blue/black
-          markerColor: [1, 1, 1], // Bright white markers
+          markerColor: [1, 1, 1], // Bright white for natural grid
           glowColor: [0.1, 0.2, 0.4], // Subtle blue glow
           offset: [0, 0],
-          markers: [
-            // All markers with consistent size - no larger dots
-            { location: [40.7128, -74.006], size: 0.03 }, // New York
-            { location: [34.0522, -118.2437], size: 0.03 }, // Los Angeles
-            { location: [41.8781, -87.6298], size: 0.03 }, // Chicago
-            { location: [39.7392, -104.9903], size: 0.03 }, // Denver
-            { location: [25.7617, -80.1918], size: 0.03 }, // Miami
-            { location: [47.6062, -122.3321], size: 0.03 }, // Seattle
-            { location: [29.7604, -95.3698], size: 0.03 }, // Houston
-            { location: [33.4484, -112.0740], size: 0.03 }, // Phoenix
-            { location: [43.6532, -79.3832], size: 0.03 }, // Toronto
-            { location: [45.5017, -73.5673], size: 0.03 }, // Montreal
-            { location: [51.5074, -0.1278], size: 0.03 }, // London
-            { location: [35.6762, 139.6503], size: 0.03 }, // Tokyo
-            { location: [-33.8688, 151.2093], size: 0.03 }, // Sydney
-            { location: [22.3193, 114.1694], size: 0.03 }, // Hong Kong
-          ],
+          markers: [], // No custom markers - just the natural pixel grid
           onRender: (state: any) => {
             state.phi = phi;
             state.scale = scale;
@@ -92,11 +76,11 @@ const HeroSection = () => {
       if (scrollY > scrollThreshold) {
         // Gradually zoom out and start rotating
         const scrollProgress = Math.min((scrollY - scrollThreshold) / windowHeight, 1);
-        scale = 3.5 - (scrollProgress * 1.5); // Zoom out from 3.5 to 2.0
+        scale = 2.8 - (scrollProgress * 1.0); // Zoom out from 2.8 to 1.8
         isRotating = scrollProgress > 0.3; // Start rotating after 30% scroll progress
       } else {
         // Reset to initial state
-        scale = 3.5;
+        scale = 2.8;
         isRotating = false;
         phi = 0; // Reset rotation
       }
