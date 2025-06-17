@@ -211,28 +211,51 @@ const AudienceSelection = () => {
               vec2 uv = (vUv - 0.5) * vec2(iResolution.x / iResolution.y, 1.0);
               vec4 O = vec4(0.);
               
+              // Global color transition cycle - slower for smoother transitions
+              float globalCycle = sin(iTime * 0.15) * 0.5 + 0.5; // 0 to 1
+              
               for (float i = 0.; i <= 5.; i += 1.) {
                   float t = i / 5.;
                   float timeOffset = iTime * 0.3 + t * 2.0;
                   
-                  // HVAC brand colors - orange/yellow and blue tones, 50% brightness
+                  // Create phase transitions: orange -> white -> blue -> white -> orange
+                  float phase = mod(globalCycle + t * 0.3, 1.0);
                   vec3 brandColor;
                   
-                  // Alternate between warm (orange/yellow) and cool (blue) tones
-                  if (mod(i, 2.0) < 1.0) {
-                      // Warm tones - orange to yellow (like sun part of logo)
+                  if (phase < 0.25) {
+                      // Orange/yellow phase
+                      float localPhase = phase / 0.25;
                       brandColor = vec3(
-                          0.4 + 0.15 * sin(timeOffset + t * 3.14159), // Orange-red component
-                          0.15 + 0.1 * sin(timeOffset * 1.2 + t * 1.5), // Limited green for orange
-                          0.0 // No blue for warm tones
+                          0.35 + 0.1 * sin(timeOffset),
+                          0.15 + 0.08 * localPhase,
+                          0.0
                       );
+                  } else if (phase < 0.4) {
+                      // Transition to white
+                      float localPhase = (phase - 0.25) / 0.15;
+                      vec3 orange = vec3(0.35, 0.15, 0.0);
+                      vec3 white = vec3(0.3, 0.3, 0.3);
+                      brandColor = mix(orange, white, localPhase);
+                  } else if (phase < 0.65) {
+                      // Blue phase
+                      float localPhase = (phase - 0.4) / 0.25;
+                      brandColor = vec3(
+                          0.0,
+                          0.03 + 0.02 * localPhase,
+                          0.2 + 0.12 * sin(timeOffset * 1.1)
+                      );
+                  } else if (phase < 0.8) {
+                      // Transition to white
+                      float localPhase = (phase - 0.65) / 0.15;
+                      vec3 blue = vec3(0.0, 0.03, 0.2);
+                      vec3 white = vec3(0.3, 0.3, 0.3);
+                      brandColor = mix(blue, white, localPhase);
                   } else {
-                      // Cool tones - blue (like snowflake part of logo)
-                      brandColor = vec3(
-                          0.0, // No red for cool tones
-                          0.05 + 0.05 * sin(timeOffset * 0.8 + t), // Minimal green
-                          0.25 + 0.15 * cos(timeOffset * 1.1 + t * 1.8) // Blue component
-                      );
+                      // Transition back to orange
+                      float localPhase = (phase - 0.8) / 0.2;
+                      vec3 white = vec3(0.3, 0.3, 0.3);
+                      vec3 orange = vec3(0.35, 0.15, 0.0);
+                      brandColor = mix(white, orange, localPhase);
                   }
                   
                   O += Line(uv, 1. + t * 0.8, 4. + t, brandColor);
