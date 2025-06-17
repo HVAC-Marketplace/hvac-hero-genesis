@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const InteractiveSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [hasCompletedAllSlides, setHasCompletedAllSlides] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef(0);
   const lastScrollTime = useRef(0);
@@ -37,6 +38,14 @@ const InteractiveSection = () => {
       bgImage: "url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')"
     }
   ];
+
+  // Track when user has seen all slides
+  useEffect(() => {
+    if (currentIndex === sectionsData.length - 1 && !hasCompletedAllSlides) {
+      setHasCompletedAllSlides(true);
+      console.log('User has completed viewing all slides');
+    }
+  }, [currentIndex, sectionsData.length, hasCompletedAllSlides]);
   
   useEffect(() => {
     const sectionElement = sectionRef.current;
@@ -54,6 +63,12 @@ const InteractiveSection = () => {
         return; // Allow normal page scrolling
       }
       
+      // If user has completed all slides, allow normal scrolling
+      if (hasCompletedAllSlides) {
+        console.log('All slides completed, allowing normal page scroll');
+        return;
+      }
+      
       // Time-based debounce
       const now = Date.now();
       if (now - lastScrollTime.current < 600) {
@@ -68,12 +83,6 @@ const InteractiveSection = () => {
       // At first slide and scrolling up - allow normal scroll to go back to hero
       if (currentIndex === 0 && scrollingUp) {
         console.log('At first slide, allowing scroll up to hero section');
-        return; // Don't prevent default, allow normal page scroll
-      }
-      
-      // At last slide and scrolling down - allow normal scroll to continue down the page
-      if (currentIndex === sectionsData.length - 1 && scrollingDown) {
-        console.log('At last slide, allowing scroll down to continue page');
         return; // Don't prevent default, allow normal page scroll
       }
       
@@ -100,12 +109,15 @@ const InteractiveSection = () => {
       const now = Date.now();
       if (now - lastScrollTime.current < 600) return;
 
+      // If user has completed all slides, allow normal scrolling
+      if (hasCompletedAllSlides) return;
+
       const touchEndY = e.changedTouches[0].clientY;
       const diff = touchStartY.current - touchEndY;
 
       if (Math.abs(diff) > 50) {
         // At boundaries, don't handle touch - let normal scroll work
-        if ((currentIndex === 0 && diff < 0) || (currentIndex === sectionsData.length - 1 && diff > 0)) {
+        if ((currentIndex === 0 && diff < 0)) {
           return;
         }
         
@@ -127,12 +139,12 @@ const InteractiveSection = () => {
       sectionElement.removeEventListener('touchstart', handleTouchStart);
       sectionElement.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [currentIndex, sectionsData.length]);
+  }, [currentIndex, sectionsData.length, hasCompletedAllSlides]);
 
   return (
     <div ref={sectionRef} className="relative">
-      {/* Progress Dots */}
-      <div className="fixed right-8 top-1/2 transform -translate-y-1/2 z-50 space-y-4">
+      {/* Progress Dots - Now positioned absolutely within the section */}
+      <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-50 space-y-4">
         {sectionsData.map((_, index) => (
           <button
             key={index}
@@ -259,15 +271,17 @@ const InteractiveSection = () => {
         ))}
       </section>
 
-      {/* Scroll hint */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50 text-white/60 text-sm animate-bounce">
-        <div className="flex flex-col items-center space-y-2">
-          <span>Scroll to explore</span>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
+      {/* Scroll hint - only show if not completed all slides */}
+      {!hasCompletedAllSlides && (
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50 text-white/60 text-sm animate-bounce">
+          <div className="flex flex-col items-center space-y-2">
+            <span>Scroll to explore</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
