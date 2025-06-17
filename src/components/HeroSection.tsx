@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,6 +27,7 @@ const HeroSection = () => {
       try {
         const { EnhancedGlobe } = await import('../components/EnhancedGlobe.js');
         window.EnhancedGlobe = EnhancedGlobe;
+        console.log('EnhancedGlobe class loaded successfully');
       } catch (error) {
         console.error('Failed to load EnhancedGlobe:', error);
       }
@@ -41,16 +41,28 @@ const HeroSection = () => {
       console.log('Canvas found:', canvas);
       console.log('THREE loaded:', !!window.THREE);
       
-      if (!canvas || !window.THREE) return;
+      if (!canvas || !window.THREE) {
+        console.log('Missing canvas or THREE.js');
+        return;
+      }
 
       try {
         // Load enhanced globe class
         await loadEnhancedGlobe();
         
         // Wait for enhanced globe class to be available
-        while (!window.EnhancedGlobe) {
+        let attempts = 0;
+        while (!window.EnhancedGlobe && attempts < 50) {
           await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
         }
+
+        if (!window.EnhancedGlobe) {
+          console.error('EnhancedGlobe class not available after loading attempts');
+          return;
+        }
+
+        console.log('Starting globe initialization...');
 
         // Initialize enhanced globe with HVAC marketplace styling
         globe = new window.EnhancedGlobe('globeCanvas', {
@@ -125,7 +137,7 @@ const HeroSection = () => {
         className="absolute inset-0 w-full h-full hidden sm:block"
         style={{ 
           zIndex: 1,
-          opacity: 0.6,
+          opacity: 1,
           pointerEvents: 'none'
         }}
       />
