@@ -3,10 +3,11 @@ import React, { useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-// Extend Window interface to include THREE
+// Extend Window interface to include THREE and EnhancedGlobe
 declare global {
   interface Window {
     THREE: any;
+    EnhancedGlobe: any;
   }
 }
 
@@ -16,14 +17,26 @@ const HeroSection = () => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isMobile = window.innerWidth < 640;
     
-    console.log('Globe init check:', { prefersReducedMotion, isMobile, width: window.innerWidth });
+    console.log('Enhanced Globe init check:', { prefersReducedMotion, isMobile, width: window.innerWidth });
     
     if (prefersReducedMotion || isMobile) return;
 
-    // Lazy load Three.js and initialize globe
+    let globe = null;
+
+    // Load enhanced globe class
+    const loadEnhancedGlobe = async () => {
+      try {
+        const { EnhancedGlobe } = await import('../components/EnhancedGlobe.js');
+        window.EnhancedGlobe = EnhancedGlobe;
+      } catch (error) {
+        console.error('Failed to load EnhancedGlobe:', error);
+      }
+    };
+
+    // Lazy load Three.js and initialize enhanced globe
     const script = document.createElement('script');
     script.src = 'https://unpkg.com/three@0.152.0/build/three.min.js';
-    script.onload = () => {
+    script.onload = async () => {
       const canvas = document.getElementById('globeCanvas');
       console.log('Canvas found:', canvas);
       console.log('THREE loaded:', !!window.THREE);
@@ -31,168 +44,88 @@ const HeroSection = () => {
       if (!canvas || !window.THREE) return;
 
       try {
-        const renderer = new window.THREE.WebGLRenderer({ 
-          canvas, 
-          alpha: true,
-          antialias: true
-        });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x000000, 0);
+        // Load enhanced globe class
+        await loadEnhancedGlobe();
         
-        const scene = new window.THREE.Scene();
-        const camera = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        
-        // Create Earth texture using a simple procedural approach
-        const canvas2D = document.createElement('canvas');
-        canvas2D.width = 512;
-        canvas2D.height = 256;
-        const ctx = canvas2D.getContext('2d');
-        
-        // Create a simple Earth-like texture
-        if (ctx) {
-          // Ocean background
-          ctx.fillStyle = '#1e40af';
-          ctx.fillRect(0, 0, 512, 256);
-          
-          // Simple landmass shapes (approximating continents)
-          ctx.fillStyle = '#22c55e';
-          
-          // North America approximation
-          ctx.beginPath();
-          ctx.ellipse(120, 80, 60, 40, 0, 0, 2 * Math.PI);
-          ctx.fill();
-          
-          // South America approximation
-          ctx.beginPath();
-          ctx.ellipse(140, 160, 25, 50, 0, 0, 2 * Math.PI);
-          ctx.fill();
-          
-          // Europe/Africa approximation
-          ctx.beginPath();
-          ctx.ellipse(280, 100, 40, 60, 0, 0, 2 * Math.PI);
-          ctx.fill();
-          
-          // Asia approximation
-          ctx.beginPath();
-          ctx.ellipse(380, 80, 70, 45, 0, 0, 2 * Math.PI);
-          ctx.fill();
-          
-          // Australia approximation
-          ctx.beginPath();
-          ctx.ellipse(420, 180, 30, 20, 0, 0, 2 * Math.PI);
-          ctx.fill();
+        // Wait for enhanced globe class to be available
+        while (!window.EnhancedGlobe) {
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
-        
-        const texture = new window.THREE.CanvasTexture(canvas2D);
-        
-        // Create globe with the texture
-        const globe = new window.THREE.Mesh(
-          new window.THREE.SphereGeometry(1.5, 64, 32),
-          new window.THREE.MeshBasicMaterial({ 
-            map: texture,
-            transparent: true,
-            opacity: 0.7
-          })
-        );
-        scene.add(globe);
-        
-        // Add subtle ambient light
-        const ambientLight = new window.THREE.AmbientLight(0x404040, 0.4);
-        scene.add(ambientLight);
-        
-        // Start camera far away and small globe
-        camera.position.set(0, 0, 15);
-        globe.scale.setScalar(0.1);
-        camera.lookAt(0, 0, 0);
-        
-        console.log('Globe with texture created');
-        
-        let animationId: number;
-        let startTime = Date.now();
-        const animationDuration = 4000; // 4 seconds
-        
-        function animate() {
-          const elapsed = Date.now() - startTime;
-          const progress = Math.min(elapsed / animationDuration, 1);
-          
-          // Easing function for smooth animation
-          const easeInOut = (t: number) => t * t * (3.0 - 2.0 * t);
-          const easedProgress = easeInOut(progress);
-          
-          // Zoom in animation
-          const startZ = 15;
-          const endZ = 4;
-          camera.position.z = startZ + (endZ - startZ) * easedProgress;
-          
-          // Scale up the globe
-          const startScale = 0.1;
-          const endScale = 1;
-          const currentScale = startScale + (endScale - startScale) * easedProgress;
-          globe.scale.setScalar(currentScale);
-          
-          // Rotate globe - faster at start, slower at end
-          const rotationSpeed = 0.02 * (1 - easedProgress * 0.8);
-          globe.rotation.y += rotationSpeed;
-          
-          // Focus on North America (rotate to show it prominently)
-          if (progress > 0.7) {
-            const focusProgress = (progress - 0.7) / 0.3;
-            const targetRotationY = -Math.PI * 0.3; // Show North America
-            globe.rotation.y += (targetRotationY - globe.rotation.y) * focusProgress * 0.02;
-            globe.rotation.x = Math.sin(focusProgress * Math.PI) * 0.1;
+
+        // Initialize enhanced globe with HVAC marketplace styling
+        globe = new window.EnhancedGlobe('globeCanvas', {
+          globeRadius: 1.5,
+          particleSize: 0.03,
+          animationDuration: 4000,
+          focusRegion: 'north_america',
+          colors: {
+            background: '#000000',
+            ocean: '#0F172A',
+            glow: '#2563EB', // HVAC blue theme
+            particles: {
+              north_america: '#3B82F6', // Highlighted for US market focus
+              south_america: '#10B981',
+              europe: '#F59E0B',
+              africa: '#EF4444',
+              asia: '#8B5CF6',
+              australia: '#06B6D4'
+            }
           }
-          
-          renderer.render(scene, camera);
-          animationId = requestAnimationFrame(animate);
-        }
-        
-        animate();
-        console.log('Globe animation started with zoom and focus sequence');
-        
+        });
+
+        await globe.init();
+        console.log('Enhanced globe animation started with realistic geography and LED styling');
+
+        // Handle window resize
         const handleResize = () => {
-          renderer.setSize(window.innerWidth, window.innerHeight);
-          camera.aspect = window.innerWidth / window.innerHeight;
-          camera.updateProjectionMatrix();
+          if (globe) {
+            globe.handleResize();
+          }
         };
-        
+
         window.addEventListener('resize', handleResize);
-        
-        // Cleanup function
+
+        // Return cleanup function
         return () => {
           window.removeEventListener('resize', handleResize);
-          if (animationId) {
-            cancelAnimationFrame(animationId);
+          if (globe) {
+            globe.destroy();
           }
-          renderer.dispose();
-          texture.dispose();
         };
+
       } catch (error) {
-        console.error('Failed to initialize Three.js globe:', error);
+        console.error('Failed to initialize enhanced Three.js globe:', error);
       }
     };
-    
+
     script.onerror = () => {
-      console.error('Failed to load Three.js library');
+      console.error('Failed to load Three.js');
     };
-    
+
     document.head.appendChild(script);
-    
+
+    // Cleanup function for the effect
     return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
+      if (globe) {
+        globe.destroy();
+      }
+      // Remove script
+      const existingThreeScript = document.querySelector('script[src="https://unpkg.com/three@0.152.0/build/three.min.js"]');
+      if (existingThreeScript && existingThreeScript.parentNode) {
+        document.head.removeChild(existingThreeScript);
       }
     };
   }, []);
 
   return (
     <section className="relative min-h-screen bg-slate-900 overflow-hidden font-inter section-wave">
-      {/* Globe Canvas - positioned behind content */}
+      {/* Enhanced Globe Canvas - positioned behind content */}
       <canvas 
         id="globeCanvas" 
         className="absolute inset-0 w-full h-full hidden sm:block"
         style={{ 
           zIndex: 1,
-          opacity: 0.4,
+          opacity: 0.6,
           pointerEvents: 'none'
         }}
       />
