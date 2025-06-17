@@ -476,15 +476,15 @@ const AudienceSelection = () => {
                 {/* Features List */}
                 <div className="flex justify-center items-center gap-4 mb-6 text-xs">
                   <div className="flex items-center text-white/60">
-                    <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></div>
+                    <div className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2"></div>
                     <span>Secure account management</span>
                   </div>
                   <div className="flex items-center text-white/60">
-                    <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mr-2"></div>
+                    <div className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2"></div>
                     <span>Rapid product ordering</span>
                   </div>
                   <div className="flex items-center text-white/60">
-                    <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2"></div>
+                    <div className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2"></div>
                     <span>Personalized service & support</span>
                   </div>
                 </div>
