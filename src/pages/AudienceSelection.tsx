@@ -66,7 +66,7 @@ const AudienceSelection = () => {
             vec2 projection = origin + direction * projLength;
             float distance = length(position - projection);
             
-            // Smooth beam falloff
+            // Softer, broader beam falloff
             float beamFalloff = exp(-distance * width);
             // Gentle distance fade
             float lengthFalloff = exp(-projLength * 0.0005);
@@ -85,26 +85,26 @@ const AudienceSelection = () => {
             
             float time = iTime * 0.2;
             
-            // Soft white flowing beams emanating from bottom-right
+            // Softer, broader white flowing beams emanating from bottom-right
             float wave1 = sin(time * 0.8 + pos.y * 0.0008) * 0.1;
             vec2 dir1 = normalize(vec2(-0.7 + wave1, -0.7));
-            color += vec3(0.8) * rayIntensity(origin, dir1, pos, 0.008, 0.3);
+            color += vec3(0.6) * rayIntensity(origin, dir1, pos, 0.004, 0.25);
             
             float wave2 = cos(time * 1.0 + pos.x * 0.0006) * 0.08;
             vec2 dir2 = normalize(vec2(-0.8, -0.6 + wave2));
-            color += vec3(0.8) * rayIntensity(origin, dir2, pos, 0.01, 0.25);
+            color += vec3(0.6) * rayIntensity(origin, dir2, pos, 0.005, 0.2);
             
             float wave3 = sin(time * 0.6 + pos.y * 0.0005) * 0.06;
             vec2 dir3 = normalize(vec2(-0.6 + wave3, -0.8));
-            color += vec3(0.8) * rayIntensity(origin, dir3, pos, 0.012, 0.2);
+            color += vec3(0.6) * rayIntensity(origin, dir3, pos, 0.006, 0.18);
             
             float wave4 = cos(time * 1.2 + pos.x * 0.0007) * 0.05;
             vec2 dir4 = normalize(vec2(-0.5 + wave4, -0.9));
-            color += vec3(0.8) * rayIntensity(origin, dir4, pos, 0.015, 0.18);
+            color += vec3(0.6) * rayIntensity(origin, dir4, pos, 0.007, 0.15);
             
             float wave5 = sin(time * 1.5 + pos.y * 0.0004) * 0.04;
             vec2 dir5 = normalize(vec2(-0.9, -0.4 + wave5));
-            color += vec3(0.8) * rayIntensity(origin, dir5, pos, 0.018, 0.15);
+            color += vec3(0.6) * rayIntensity(origin, dir5, pos, 0.008, 0.12);
             
             gl_FragColor = vec4(color, 1.0);
           }
