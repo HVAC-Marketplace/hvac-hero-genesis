@@ -1,13 +1,19 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Building, Wrench } from 'lucide-react';
+import { Home, Building, Wrench, Bot, Link, BarChart3, ArrowRight, RotateCcw } from 'lucide-react';
 
 const AudienceSelection = () => {
   const navigate = useNavigate();
+  const [isFlipped, setIsFlipped] = useState(false);
 
   const handleAudienceSelection = (audienceType: string) => {
     localStorage.setItem('audienceType', audienceType);
     navigate('/');
+  };
+
+  const handleFlip = () => {
+    setIsFlipped(!isFlipped);
   };
 
   useEffect(() => {
@@ -367,6 +373,36 @@ const AudienceSelection = () => {
     }
   ];
 
+  const platformFeatures = [
+    {
+      icon: Bot,
+      title: 'Intelligent Automation',
+      description: 'Automate repetitive tasks across tools like Slack, Notion, GitHub, and Figma with AI-powered triggers and actions—no code required.',
+      action: 'Learn more',
+      gradient: 'from-purple-500 to-indigo-600',
+      hoverColor: 'hover:border-purple-500/40 hover:shadow-purple-500/20',
+      textColor: 'text-purple-400'
+    },
+    {
+      icon: Link,
+      title: 'Unified Integrations',
+      description: 'Connect 300+ apps into one seamless workspace. Sync files, messages, and tasks instantly between your favorite tools.',
+      action: 'View integrations',
+      gradient: 'from-green-500 to-emerald-600',
+      hoverColor: 'hover:border-green-500/40 hover:shadow-green-500/20',
+      textColor: 'text-green-400'
+    },
+    {
+      icon: BarChart3,
+      title: 'Real-Time Insights',
+      description: 'Monitor productivity, track KPIs, and visualize workflow ROI with live dashboards and actionable analytics.',
+      action: 'See analytics',
+      gradient: 'from-blue-500 to-sky-600',
+      hoverColor: 'hover:border-blue-500/40 hover:shadow-blue-500/20',
+      textColor: 'text-blue-400'
+    }
+  ];
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-black">
       {/* Base Shader Background Canvas - Flowing beams */}
@@ -402,95 +438,210 @@ const AudienceSelection = () => {
       {/* Content overlay */}
       <div className="min-h-screen flex flex-col justify-center items-center px-6 py-8 relative z-10">
         <div className="max-w-2xl w-full mx-auto">
-          {/* Main Glass Portal Container - Condensed size */}
-          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl">
-            {/* Header */}
-            <div className="text-center mb-6">
-              {/* Brand Logo - Larger and without glass circle */}
-              <div className="inline-flex items-center justify-center mb-3">
-                <img 
-                  src="/lovable-uploads/285c4d5c-0439-42e9-9ea6-a7a05b9c8489.png" 
-                  alt="HVAC Marketplace Logo" 
-                  className="w-24 h-24 object-contain"
-                />
-              </div>
-              <h1 className="text-2xl font-light text-white mb-2 tracking-wide">
-                Welcome to the HVAC Marketplace
-              </h1>
-              <p className="text-white/70 text-sm font-light leading-relaxed max-w-lg mx-auto">
-                Experience the future of HVAC marketplace with our advanced glassmorphism interface. 
-                Choose your role to access tailored solutions.
-              </p>
-            </div>
+          {/* Flip Container with 3D Perspective */}
+          <div className="relative perspective-1000" style={{ perspective: '1000px' }}>
+            <div 
+              className={`relative transition-transform duration-700 transform-style-preserve-3d ${
+                isFlipped ? 'rotate-y-180' : ''
+              }`}
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+              {/* Front Side - Original Portal */}
+              <div 
+                className={`bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl backface-hidden ${
+                  isFlipped ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                }`}
+                style={{ backfaceVisibility: 'hidden' }}
+              >
+                {/* Header */}
+                <div className="text-center mb-6">
+                  {/* Brand Logo - Larger and without glass circle */}
+                  <div className="inline-flex items-center justify-center mb-3">
+                    <img 
+                      src="/lovable-uploads/285c4d5c-0439-42e9-9ea6-a7a05b9c8489.png" 
+                      alt="HVAC Marketplace Logo" 
+                      className="w-24 h-24 object-contain"
+                    />
+                  </div>
+                  <h1 className="text-2xl font-light text-white mb-2 tracking-wide">
+                    Welcome to the HVAC Marketplace
+                  </h1>
+                  <p className="text-white/70 text-sm font-light leading-relaxed max-w-lg mx-auto">
+                    Experience the future of HVAC marketplace with our advanced glassmorphism interface. 
+                    Choose your role to access tailored solutions.
+                  </p>
+                </div>
 
-            {/* Features List */}
-            <div className="flex justify-center items-center gap-4 mb-6 text-xs">
-              <div className="flex items-center text-white/60">
-                <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></div>
-                <span>Military-grade security</span>
+                {/* Features List */}
+                <div className="flex justify-center items-center gap-4 mb-6 text-xs">
+                  <div className="flex items-center text-white/60">
+                    <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></div>
+                    <span>Military-grade security</span>
+                  </div>
+                  <div className="flex items-center text-white/60">
+                    <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mr-2"></div>
+                    <span>Lightning-fast access</span>
+                  </div>
+                  <div className="flex items-center text-white/60">
+                    <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2"></div>
+                    <span>Premium experience</span>
+                  </div>
+                </div>
+                
+                {/* Vertical Portal Cards - Condensed */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {audienceOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => handleAudienceSelection(option.id)}
+                      className={`group relative overflow-hidden bg-gradient-to-b ${option.gradient} border border-white/20 hover:border-white/30 rounded-2xl p-4 text-center transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/30 hover:scale-105 hover:shadow-2xl`}
+                      style={{ minHeight: '220px' }}
+                    >
+                      <div className="relative z-10 flex flex-col items-center h-full">
+                        {/* Icon */}
+                        <div className="w-10 h-10 bg-white/10 backdrop-blur-xl rounded-xl flex items-center justify-center mb-3 border border-white/20 group-hover:bg-white/20 transition-all duration-300">
+                          <option.icon className="w-5 h-5 text-white" />
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="flex-grow flex flex-col justify-center">
+                          <h3 className="text-lg font-semibold text-white mb-1">{option.title}</h3>
+                          <p className="text-white/60 text-xs mb-2">{option.subtitle}</p>
+                          <p className="text-white/50 text-xs leading-relaxed mb-3">{option.description}</p>
+                        </div>
+                        
+                        {/* Sign In Button */}
+                        <div className="w-full">
+                          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg px-3 py-2 text-white font-medium group-hover:bg-white/20 group-hover:border-white/30 transition-all duration-300 text-xs">
+                            Sign in securely →
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Hover Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent translate-y-[100%] group-hover:translate-y-[-100%] transition-transform duration-700"></div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Discover Features Button */}
+                <div className="text-center mb-4">
+                  <button
+                    onClick={handleFlip}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 border border-white/20 hover:border-white/30 rounded-xl px-4 py-2 text-white font-medium transition-all duration-300 hover:scale-105"
+                  >
+                    <Bot className="w-4 h-4" />
+                    <span className="text-sm">Discover Platform Features</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Footer */}
+                <div className="pt-4 border-t border-white/10 text-center">
+                  <p className="text-white/40 text-xs mb-2">
+                    New to HVAC Portal? <span className="text-white/60 underline cursor-pointer">Create your account</span>
+                  </p>
+                  <div className="flex justify-center space-x-4 text-xs text-white/30">
+                    <span className="hover:text-white/50 cursor-pointer">Privacy Policy</span>
+                    <span>•</span>
+                    <span className="hover:text-white/50 cursor-pointer">Terms of Service</span>
+                    <span>•</span>
+                    <span className="hover:text-white/50 cursor-pointer">Support</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center text-white/60">
-                <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mr-2"></div>
-                <span>Lightning-fast access</span>
-              </div>
-              <div className="flex items-center text-white/60">
-                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2"></div>
-                <span>Premium experience</span>
-              </div>
-            </div>
-            
-            {/* Vertical Portal Cards - Condensed */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {audienceOptions.map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => handleAudienceSelection(option.id)}
-                  className={`group relative overflow-hidden bg-gradient-to-b ${option.gradient} border border-white/20 hover:border-white/30 rounded-2xl p-4 text-center transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/30 hover:scale-105 hover:shadow-2xl`}
-                  style={{ minHeight: '220px' }}
-                >
-                  <div className="relative z-10 flex flex-col items-center h-full">
-                    {/* Icon */}
-                    <div className="w-10 h-10 bg-white/10 backdrop-blur-xl rounded-xl flex items-center justify-center mb-3 border border-white/20 group-hover:bg-white/20 transition-all duration-300">
-                      <option.icon className="w-5 h-5 text-white" />
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-grow flex flex-col justify-center">
-                      <h3 className="text-lg font-semibold text-white mb-1">{option.title}</h3>
-                      <p className="text-white/60 text-xs mb-2">{option.subtitle}</p>
-                      <p className="text-white/50 text-xs leading-relaxed mb-3">{option.description}</p>
-                    </div>
-                    
-                    {/* Sign In Button */}
-                    <div className="w-full">
-                      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg px-3 py-2 text-white font-medium group-hover:bg-white/20 group-hover:border-white/30 transition-all duration-300 text-xs">
-                        Sign in securely →
+
+              {/* Back Side - Platform Features */}
+              <div 
+                className={`absolute inset-0 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl rotate-y-180 backface-hidden ${
+                  isFlipped ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                }`}
+                style={{ 
+                  backfaceVisibility: 'hidden',
+                  transform: 'rotateY(180deg)'
+                }}
+              >
+                {/* Features Header */}
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center mb-3">
+                    <img 
+                      src="/lovable-uploads/285c4d5c-0439-42e9-9ea6-a7a05b9c8489.png" 
+                      alt="HVAC Marketplace Logo" 
+                      className="w-16 h-16 object-contain"
+                    />
+                  </div>
+                  <div className="inline-block px-3 py-1 bg-purple-500/20 border border-purple-400/30 text-purple-300 rounded-full text-xs font-medium tracking-tight mb-3">
+                    Platform Features
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
+                    Supercharge your workflow
+                  </h2>
+                  <p className="text-white/70 text-sm font-light leading-relaxed max-w-lg mx-auto">
+                    Automate, connect, and scale with HVAC Pro. Discover how our integration platform powers high-performing teams.
+                  </p>
+                </div>
+
+                {/* Platform Features Grid */}
+                <div className="grid gap-4 mb-6">
+                  {platformFeatures.map((feature, index) => (
+                    <div 
+                      key={index}
+                      className={`group bg-white/5 border border-white/10 ${feature.hoverColor} hover:bg-white/10 rounded-xl p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]`}
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Icon */}
+                        <div className={`flex items-center justify-center w-10 h-10 bg-gradient-to-br ${feature.gradient} rounded-lg mb-1 group-hover:scale-110 transition-transform duration-200 flex-shrink-0`}>
+                          <feature.icon className="w-5 h-5 text-white" />
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="flex-grow min-w-0">
+                          <h3 className={`text-base font-semibold text-white mb-1 group-hover:${feature.textColor} transition-colors duration-200`}>
+                            {feature.title}
+                          </h3>
+                          <p className="text-white/60 text-xs leading-relaxed mb-2">
+                            {feature.description}
+                          </p>
+                          <div className={`flex items-center gap-2 text-xs ${feature.textColor} group-hover:underline transition-all duration-200 font-medium cursor-pointer`}>
+                            <span>{feature.action}</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Hover Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent translate-y-[100%] group-hover:translate-y-[-100%] transition-transform duration-700"></div>
-                </button>
-              ))}
-            </div>
+                  ))}
+                </div>
 
-            {/* Footer */}
-            <div className="mt-6 pt-4 border-t border-white/10 text-center">
-              <p className="text-white/40 text-xs mb-2">
-                New to HVAC Portal? <span className="text-white/60 underline cursor-pointer">Create your account</span>
-              </p>
-              <div className="flex justify-center space-x-4 text-xs text-white/30">
-                <span className="hover:text-white/50 cursor-pointer">Privacy Policy</span>
-                <span>•</span>
-                <span className="hover:text-white/50 cursor-pointer">Terms of Service</span>
-                <span>•</span>
-                <span className="hover:text-white/50 cursor-pointer">Support</span>
+                {/* Back to Portal Button */}
+                <div className="text-center">
+                  <button
+                    onClick={handleFlip}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 hover:from-white/15 hover:to-white/10 border border-white/20 hover:border-white/30 rounded-xl px-4 py-2 text-white font-medium transition-all duration-300 hover:scale-105"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span className="text-sm">Back to Portal</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+        .transform-style-preserve-3d {
+          transform-style: preserve-3d;
+        }
+        .backface-hidden {
+          backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+          transform: rotateY(180deg);
+        }
+      `}</style>
     </div>
   );
 };
