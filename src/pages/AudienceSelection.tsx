@@ -62,14 +62,16 @@ const AudienceSelection = () => {
             vec2 toPoint = position - origin;
             float projLength = dot(toPoint, direction);
             
-            if (projLength < 0.0) return 0.0;
+            // Only show rays that extend away from origin
+            if (projLength < 50.0) return 0.0;
             
             vec2 projection = origin + direction * projLength;
             float distance = length(position - projection);
             
-            // Much softer falloff for elegant beams
+            // Ultra soft falloff for elegant beams
             float beamFalloff = exp(-distance * width);
-            float lengthFalloff = exp(-projLength * 0.0001); // Very gradual fade
+            // Very gradual fade over distance with minimum threshold
+            float lengthFalloff = smoothstep(0.0, 1.0, projLength / 800.0) * exp(-projLength * 0.0003);
             
             return beamFalloff * lengthFalloff * intensity;
           }
@@ -78,40 +80,45 @@ const AudienceSelection = () => {
             vec2 uv = gl_FragCoord.xy / iResolution.xy;
             vec2 pos = gl_FragCoord.xy;
             
-            // Origin point at bottom right (no visible source)
-            vec2 origin = vec2(iResolution.x * 0.85, iResolution.y * 0.15);
+            // Origin completely off-screen at bottom right
+            vec2 origin = vec2(iResolution.x * 1.2, iResolution.y * -0.2);
             
             vec3 color = vec3(0.0);
             
-            float time = iTime * 0.2;
+            float time = iTime * 0.15;
             
             // Primary beam - soft blue flowing upward-left
-            float wave1 = sin(time * 0.8 + pos.y * 0.0005) * 0.15;
-            vec2 dir1 = normalize(vec2(-0.6 + wave1, 0.8));
-            color += vec3(0.15, 0.3, 0.6) * rayIntensity(origin, dir1, pos, 0.003, 0.8);
+            float wave1 = sin(time * 0.7 + pos.y * 0.0003) * 0.08;
+            vec2 dir1 = normalize(vec2(-0.65 + wave1, 0.75));
+            color += vec3(0.08, 0.15, 0.25) * rayIntensity(origin, dir1, pos, 0.002, 0.6);
             
             // Secondary beam - purple-blue, slightly different angle
-            float wave2 = cos(time * 1.1 + pos.x * 0.0007) * 0.12;
-            vec2 dir2 = normalize(vec2(-0.7, 0.7 + wave2));
-            color += vec3(0.25, 0.2, 0.5) * rayIntensity(origin, dir2, pos, 0.004, 0.6);
+            float wave2 = cos(time * 0.9 + pos.x * 0.0004) * 0.06;
+            vec2 dir2 = normalize(vec2(-0.75, 0.65 + wave2));
+            color += vec3(0.12, 0.08, 0.2) * rayIntensity(origin, dir2, pos, 0.003, 0.5);
             
             // Third beam - cyan tint, more vertical
-            float wave3 = sin(time * 0.6 + pos.y * 0.0004) * 0.1;
-            vec2 dir3 = normalize(vec2(-0.5 + wave3, 0.85));
-            color += vec3(0.1, 0.4, 0.7) * rayIntensity(origin, dir3, pos, 0.005, 0.5);
+            float wave3 = sin(time * 0.5 + pos.y * 0.0002) * 0.05;
+            vec2 dir3 = normalize(vec2(-0.55 + wave3, 0.83));
+            color += vec3(0.05, 0.18, 0.3) * rayIntensity(origin, dir3, pos, 0.004, 0.4);
             
             // Fourth subtle beam - light purple
-            float wave4 = cos(time * 0.9 + pos.x * 0.0006) * 0.08;
-            vec2 dir4 = normalize(vec2(-0.8 + wave4, 0.6));
-            color += vec3(0.3, 0.25, 0.6) * rayIntensity(origin, dir4, pos, 0.006, 0.4);
+            float wave4 = cos(time * 1.1 + pos.x * 0.0005) * 0.04;
+            vec2 dir4 = normalize(vec2(-0.85 + wave4, 0.55));
+            color += vec3(0.15, 0.1, 0.25) * rayIntensity(origin, dir4, pos, 0.005, 0.3);
             
             // Very subtle fifth beam for depth
-            float wave5 = sin(time * 1.3 + pos.y * 0.0003) * 0.05;
-            vec2 dir5 = normalize(vec2(-0.55, 0.83 + wave5));
-            color += vec3(0.2, 0.35, 0.8) * rayIntensity(origin, dir5, pos, 0.007, 0.3);
+            float wave5 = sin(time * 1.4 + pos.y * 0.0001) * 0.03;
+            vec2 dir5 = normalize(vec2(-0.6, 0.8 + wave5));
+            color += vec3(0.1, 0.2, 0.35) * rayIntensity(origin, dir5, pos, 0.006, 0.25);
             
-            // Subtle overall darkening to match Nexus aesthetic
-            color *= 0.4;
+            // Additional atmospheric rays for more depth
+            float wave6 = cos(time * 0.3 + pos.x * 0.0002) * 0.02;
+            vec2 dir6 = normalize(vec2(-0.7 + wave6, 0.7));
+            color += vec3(0.06, 0.12, 0.2) * rayIntensity(origin, dir6, pos, 0.008, 0.2);
+            
+            // Final subtle darkening to match Nexus aesthetic
+            color *= 0.3;
             
             gl_FragColor = vec4(color, 1.0);
           }
