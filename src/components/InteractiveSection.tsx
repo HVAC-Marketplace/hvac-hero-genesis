@@ -1,8 +1,8 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 
 const InteractiveSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isScrolling, setIsScrolling] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef(0);
   const lastScrollTime = useRef(0);
@@ -54,29 +54,41 @@ const InteractiveSection = () => {
         return; // Allow normal page scrolling
       }
       
-      // Simple time-based debounce instead of state-based
+      // Time-based debounce
       const now = Date.now();
-      if (now - lastScrollTime.current < 800) {
+      if (now - lastScrollTime.current < 600) {
         console.log('Scroll blocked by time debounce');
         e.preventDefault();
         return;
       }
       
+      const scrollingDown = e.deltaY > 0;
+      const scrollingUp = e.deltaY < 0;
+      
+      // At first slide and scrolling up - allow normal scroll to go back to hero
+      if (currentIndex === 0 && scrollingUp) {
+        console.log('At first slide, allowing scroll up to hero section');
+        return; // Don't prevent default, allow normal page scroll
+      }
+      
+      // At last slide and scrolling down - allow normal scroll to continue down the page
+      if (currentIndex === sectionsData.length - 1 && scrollingDown) {
+        console.log('At last slide, allowing scroll down to continue page');
+        return; // Don't prevent default, allow normal page scroll
+      }
+      
+      // Prevent default and handle internal navigation
       e.preventDefault();
       lastScrollTime.current = now;
 
-      console.log('Scroll detected, current index:', currentIndex, 'delta:', e.deltaY, 'sections length:', sectionsData.length);
+      console.log('Internal scroll detected, current index:', currentIndex, 'delta:', e.deltaY);
       
-      if (e.deltaY > 0 && currentIndex < sectionsData.length - 1) {
-        // Scroll down - next section
+      if (scrollingDown && currentIndex < sectionsData.length - 1) {
         console.log('Moving to next section:', currentIndex + 1);
         setCurrentIndex(prev => prev + 1);
-      } else if (e.deltaY < 0 && currentIndex > 0) {
-        // Scroll up - previous section
+      } else if (scrollingUp && currentIndex > 0) {
         console.log('Moving to previous section:', currentIndex - 1);
         setCurrentIndex(prev => prev - 1);
-      } else {
-        console.log('At boundary, allowing normal scroll');
       }
     };
 
@@ -86,12 +98,17 @@ const InteractiveSection = () => {
 
     const handleTouchEnd = (e: TouchEvent) => {
       const now = Date.now();
-      if (now - lastScrollTime.current < 800) return;
+      if (now - lastScrollTime.current < 600) return;
 
       const touchEndY = e.changedTouches[0].clientY;
       const diff = touchStartY.current - touchEndY;
 
       if (Math.abs(diff) > 50) {
+        // At boundaries, don't handle touch - let normal scroll work
+        if ((currentIndex === 0 && diff < 0) || (currentIndex === sectionsData.length - 1 && diff > 0)) {
+          return;
+        }
+        
         lastScrollTime.current = now;
         if (diff > 0 && currentIndex < sectionsData.length - 1) {
           setCurrentIndex(prev => prev + 1);
@@ -130,7 +147,7 @@ const InteractiveSection = () => {
         ))}
       </div>
 
-      {/* Single Section Container - Changed from h-screen to h-[80vh] */}
+      {/* Single Section Container */}
       <section className="relative h-[80vh] w-full overflow-hidden">
         {sectionsData.map((section, index) => (
           <div
@@ -161,7 +178,7 @@ const InteractiveSection = () => {
             <div className="relative z-10 h-full flex items-center justify-center">
               <div className="text-center p-8 max-w-4xl mx-auto">
                 
-                {/* Main headline - Reduced text size */}
+                {/* Main headline */}
                 <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight transition-all duration-1000 ease-out ${
                   currentIndex === index 
                     ? 'translate-x-0 opacity-100' 
@@ -176,7 +193,7 @@ const InteractiveSection = () => {
                   </span>
                 </h2>
 
-                {/* Subtitle - Reduced text size and margin */}
+                {/* Subtitle */}
                 <p className={`text-lg md:text-xl text-gray-200 mb-6 max-w-2xl mx-auto leading-relaxed transition-all duration-1000 ease-out delay-200 ${
                   currentIndex === index 
                     ? 'translate-x-0 opacity-100' 
@@ -185,7 +202,7 @@ const InteractiveSection = () => {
                   {section.description}
                 </p>
 
-                {/* Feature cards for section 1 - Reduced margin */}
+                {/* Feature cards for section 1 */}
                 {index === 0 && (
                   <div className={`grid md:grid-cols-3 gap-4 mb-6 transition-all duration-1000 ease-out delay-400 ${
                     currentIndex === index 
