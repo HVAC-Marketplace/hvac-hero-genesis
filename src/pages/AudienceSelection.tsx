@@ -215,19 +215,27 @@ const AudienceSelection = () => {
                   float t = i / 5.;
                   float timeOffset = iTime * 0.3 + t * 2.0;
                   
-                  // Aurora color palette
-                  vec3 auroraColor = vec3(
-                      0.1 + 0.6 * sin(timeOffset + t * 3.14159),
-                      0.3 + 0.7 * sin(timeOffset * 1.3 + t * 2.0),
-                      0.4 + 0.6 * cos(timeOffset * 0.8 + t * 1.5)
-                  );
+                  // HVAC brand colors - orange/yellow and blue tones, 50% brightness
+                  vec3 brandColor;
                   
-                  // Add some green-cyan aurora tones
-                  auroraColor = mix(auroraColor, vec3(0.0, 0.8, 0.6), sin(timeOffset + t) * 0.5 + 0.5);
-                  // Add purple-pink highlights
-                  auroraColor = mix(auroraColor, vec3(0.7, 0.2, 0.9), cos(timeOffset * 0.7 + t * 1.2) * 0.3 + 0.3);
+                  // Alternate between warm (orange/yellow) and cool (blue) tones
+                  if (mod(i, 2.0) < 1.0) {
+                      // Warm tones - orange to yellow (like sun part of logo)
+                      brandColor = vec3(
+                          0.4 + 0.15 * sin(timeOffset + t * 3.14159), // Orange-red component
+                          0.15 + 0.1 * sin(timeOffset * 1.2 + t * 1.5), // Limited green for orange
+                          0.0 // No blue for warm tones
+                      );
+                  } else {
+                      // Cool tones - blue (like snowflake part of logo)
+                      brandColor = vec3(
+                          0.0, // No red for cool tones
+                          0.05 + 0.05 * sin(timeOffset * 0.8 + t), // Minimal green
+                          0.25 + 0.15 * cos(timeOffset * 1.1 + t * 1.8) // Blue component
+                      );
+                  }
                   
-                  O += Line(uv, 1. + t * 0.8, 4. + t, auroraColor);
+                  O += Line(uv, 1. + t * 0.8, 4. + t, brandColor);
               }
               
               gl_FragColor = O;
