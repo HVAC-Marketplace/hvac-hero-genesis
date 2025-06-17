@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Building, Wrench, Bot, Link, BarChart3, ArrowRight, RotateCcw } from 'lucide-react';
@@ -378,30 +379,30 @@ const AudienceSelection = () => {
       title: 'Intelligent Automation',
       description: 'Automate repetitive tasks across tools like Slack, Notion, GitHub, and Figma with AI-powered triggers and actions—no code required.',
       action: 'Learn more',
-      gradient: 'from-indigo-500 to-purple-600',
-      hoverColor: 'hover:border-indigo-500/60 hover:shadow-indigo-500/30',
-      textColor: 'text-indigo-400',
-      bgHover: 'hover:bg-indigo-500/10'
+      gradient: 'from-blue-500 to-blue-600',
+      hoverColor: 'hover:border-blue-500/60 hover:shadow-blue-500/30',
+      textColor: 'text-blue-400',
+      bgHover: 'hover:bg-blue-500/10'
     },
     {
       icon: Link,
       title: 'Unified Integrations',
       description: 'Connect 300+ apps into one seamless workspace. Sync files, messages, and tasks instantly between your favorite tools.',
       action: 'View integrations',
-      gradient: 'from-emerald-500 to-green-600',
-      hoverColor: 'hover:border-emerald-500/60 hover:shadow-emerald-500/30',
-      textColor: 'text-emerald-400',
-      bgHover: 'hover:bg-emerald-500/10'
+      gradient: 'from-orange-500 to-amber-600',
+      hoverColor: 'hover:border-orange-500/60 hover:shadow-orange-500/30',
+      textColor: 'text-orange-400',
+      bgHover: 'hover:bg-orange-500/10'
     },
     {
       icon: BarChart3,
       title: 'Real-Time Insights',
       description: 'Monitor productivity, track KPIs, and visualize workflow ROI with live dashboards and actionable analytics.',
       action: 'See analytics',
-      gradient: 'from-blue-500 to-cyan-600',
-      hoverColor: 'hover:border-blue-500/60 hover:shadow-blue-500/30',
-      textColor: 'text-blue-400',
-      bgHover: 'hover:bg-blue-500/10'
+      gradient: 'from-blue-600 to-cyan-600',
+      hoverColor: 'hover:border-blue-600/60 hover:shadow-blue-600/30',
+      textColor: 'text-blue-300',
+      bgHover: 'hover:bg-blue-600/10'
     }
   ];
 
