@@ -14,7 +14,7 @@ const HeroSection = () => {
     if (prefersReducedMotion || isMobile) return;
 
     let phi = 0;
-    let scale = 2.8; // Better zoom level to show North America prominently
+    let scale = 1.5; // Zoom level to show full North American continent
     let isRotating = false;
 
     // Load COBE library and initialize globe
@@ -35,10 +35,10 @@ const HeroSection = () => {
         // Create globe with dark theme - no custom markers, just the natural pixel grid
         globeRef.current = createGlobe(canvas, {
           devicePixelRatio: 2,
-          width: 1000,
-          height: 1000,
+          width: 1200,
+          height: 1200,
           phi: 0,
-          theta: 0.3, // Angle to show North America initially
+          theta: 0.5, // Angle to show North America prominently
           dark: 1,
           diffuse: 1.2,
           scale: scale,
@@ -76,11 +76,11 @@ const HeroSection = () => {
       if (scrollY > scrollThreshold) {
         // Gradually zoom out and start rotating
         const scrollProgress = Math.min((scrollY - scrollThreshold) / windowHeight, 1);
-        scale = 2.8 - (scrollProgress * 1.0); // Zoom out from 2.8 to 1.8
+        scale = 1.5 - (scrollProgress * 0.5); // Zoom out from 1.5 to 1.0
         isRotating = scrollProgress > 0.3; // Start rotating after 30% scroll progress
       } else {
         // Reset to initial state
-        scale = 2.8;
+        scale = 1.5;
         isRotating = false;
         phi = 0; // Reset rotation
       }
@@ -113,20 +113,16 @@ const HeroSection = () => {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-800/30 via-slate-900/50 to-slate-900/70" style={{ zIndex: 3 }} />
 
-      {/* Globe - positioned behind everything */}
-      <div className="absolute inset-0 flex items-center justify-end pr-8 hidden lg:flex" style={{ zIndex: 5 }}>
-        <div className="relative h-[700px] w-[700px]">
-          {/* Glow effect behind globe */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 rounded-full blur-3xl"></div>
-          {/* COBE Globe Canvas */}
-          <canvas
-            ref={canvasRef}
-            style={{ width: '700px', height: '700px' }}
-            width="1000"
-            height="1000"
-            className="relative z-10"
-          />
-        </div>
+      {/* Globe - full width background without container */}
+      <div className="absolute inset-0 flex items-center justify-center hidden lg:flex" style={{ zIndex: 1 }}>
+        {/* COBE Globe Canvas - no container boundaries */}
+        <canvas
+          ref={canvasRef}
+          style={{ width: '100vw', height: '100vh' }}
+          width="1200"
+          height="1200"
+          className="opacity-80"
+        />
       </div>
 
       <div className="relative container mx-auto px-4 py-16 lg:py-24" style={{ zIndex: 20 }}>
