@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Building, Wrench, Zap } from 'lucide-react';
+import { Home, Building, Wrench } from 'lucide-react';
 
 const AudienceSelection = () => {
   const navigate = useNavigate();
@@ -402,17 +402,18 @@ const AudienceSelection = () => {
 
       {/* Content overlay */}
       <div className="min-h-screen flex flex-col justify-center items-center px-6 py-8 relative z-10">
-        <div className="max-w-3xl w-full mx-auto">
+        <div className="max-w-2xl w-full mx-auto">
           {/* Main Glass Portal Container - Condensed size */}
           <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl">
             {/* Header */}
             <div className="text-center mb-6">
               {/* Brand Logo */}
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-white/10 backdrop-blur-xl rounded-2xl mb-3 border border-white/20">
-                <div className="relative">
-                  <Zap className="w-8 h-8 text-orange-400" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full"></div>
-                </div>
+              <div className="inline-flex items-center justify-center mb-3">
+                <img 
+                  src="/lovable-uploads/e85d666f-01ca-44e0-bc99-4e537db18924.png" 
+                  alt="HVAC Marketplace Logo" 
+                  className="w-16 h-16 object-contain"
+                />
               </div>
               <h1 className="text-2xl font-light text-white mb-2 tracking-wide">
                 Welcome to the HVAC Marketplace
