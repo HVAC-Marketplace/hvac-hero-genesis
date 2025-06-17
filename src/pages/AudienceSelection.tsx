@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -89,23 +88,23 @@ const AudienceSelection = () => {
             // Less broad, higher contrast white flowing beams emanating from bottom-right
             float wave1 = sin(time * 0.8 + pos.y * 0.0008) * 0.1;
             vec2 dir1 = normalize(vec2(-0.7 + wave1, -0.7));
-            color += vec3(0.8) * rayIntensity(origin, dir1, pos, 0.006, 0.35);
+            color += vec3(0.675) * rayIntensity(origin, dir1, pos, 0.006, 0.35);
             
             float wave2 = cos(time * 1.0 + pos.x * 0.0006) * 0.08;
             vec2 dir2 = normalize(vec2(-0.8, -0.6 + wave2));
-            color += vec3(0.8) * rayIntensity(origin, dir2, pos, 0.007, 0.3);
+            color += vec3(0.675) * rayIntensity(origin, dir2, pos, 0.007, 0.3);
             
             float wave3 = sin(time * 0.6 + pos.y * 0.0005) * 0.06;
             vec2 dir3 = normalize(vec2(-0.6 + wave3, -0.8));
-            color += vec3(0.8) * rayIntensity(origin, dir3, pos, 0.008, 0.28);
+            color += vec3(0.675) * rayIntensity(origin, dir3, pos, 0.008, 0.28);
             
             float wave4 = cos(time * 1.2 + pos.x * 0.0007) * 0.05;
             vec2 dir4 = normalize(vec2(-0.5 + wave4, -0.9));
-            color += vec3(0.8) * rayIntensity(origin, dir4, pos, 0.009, 0.25);
+            color += vec3(0.675) * rayIntensity(origin, dir4, pos, 0.009, 0.25);
             
             float wave5 = sin(time * 1.5 + pos.y * 0.0004) * 0.04;
             vec2 dir5 = normalize(vec2(-0.9, -0.4 + wave5));
-            color += vec3(0.8) * rayIntensity(origin, dir5, pos, 0.01, 0.22);
+            color += vec3(0.675) * rayIntensity(origin, dir5, pos, 0.01, 0.22);
             
             gl_FragColor = vec4(color, 1.0);
           }
@@ -229,7 +228,7 @@ const AudienceSelection = () => {
               </button>
               
               <button
-                onClick={() => handleAudienceSelection('business')}
+                onClick={()={() => handleAudienceSelection('business')}
                 className="w-full group relative overflow-hidden bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-white/20 hover:border-white/30 rounded-2xl p-4 text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30"
               >
                 <div className="relative z-10">
