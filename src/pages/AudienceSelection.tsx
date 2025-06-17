@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -61,7 +60,7 @@ const AudienceSelection = () => {
             vec2 toPoint = position - origin;
             float projLength = dot(toPoint, direction);
             
-            // Show rays extending across the entire screen
+            // Show rays extending from origin outward
             if (projLength < 0.0) return 0.0;
             
             vec2 projection = origin + direction * projLength;
@@ -69,8 +68,8 @@ const AudienceSelection = () => {
             
             // Smooth beam falloff
             float beamFalloff = exp(-distance * width);
-            // Very gentle distance fade to cover whole screen
-            float lengthFalloff = exp(-projLength * 0.0001);
+            // Gentle distance fade
+            float lengthFalloff = exp(-projLength * 0.0005);
             
             return beamFalloff * lengthFalloff * intensity;
           }
@@ -79,40 +78,33 @@ const AudienceSelection = () => {
             vec2 uv = gl_FragCoord.xy / iResolution.xy;
             vec2 pos = gl_FragCoord.xy;
             
-            // Multiple origins to create rays spanning the entire screen
-            vec2 origin1 = vec2(-iResolution.x * 0.2, -iResolution.y * 0.2);
-            vec2 origin2 = vec2(-iResolution.x * 0.1, iResolution.y * 1.1);
-            vec2 origin3 = vec2(iResolution.x * 1.1, -iResolution.y * 0.1);
+            // Origin at bottom-right corner
+            vec2 origin = vec2(iResolution.x * 1.1, iResolution.y * 1.1);
             
             vec3 color = vec3(0.0);
             
             float time = iTime * 0.2;
             
-            // Soft white flowing beams from different angles
-            float wave1 = sin(time * 0.8 + pos.y * 0.0008) * 0.15;
-            vec2 dir1 = normalize(vec2(0.7 + wave1, 0.7));
-            color += vec3(1.0) * rayIntensity(origin1, dir1, pos, 0.008, 0.4);
+            // Soft white flowing beams emanating from bottom-right
+            float wave1 = sin(time * 0.8 + pos.y * 0.0008) * 0.1;
+            vec2 dir1 = normalize(vec2(-0.7 + wave1, -0.7));
+            color += vec3(0.8) * rayIntensity(origin, dir1, pos, 0.008, 0.3);
             
-            float wave2 = cos(time * 1.0 + pos.x * 0.0006) * 0.12;
-            vec2 dir2 = normalize(vec2(0.8, -0.6 + wave2));
-            color += vec3(1.0) * rayIntensity(origin2, dir2, pos, 0.01, 0.35);
+            float wave2 = cos(time * 1.0 + pos.x * 0.0006) * 0.08;
+            vec2 dir2 = normalize(vec2(-0.8, -0.6 + wave2));
+            color += vec3(0.8) * rayIntensity(origin, dir2, pos, 0.01, 0.25);
             
-            float wave3 = sin(time * 0.6 + pos.y * 0.0005) * 0.1;
-            vec2 dir3 = normalize(vec2(-0.6 + wave3, 0.8));
-            color += vec3(1.0) * rayIntensity(origin3, dir3, pos, 0.012, 0.3);
+            float wave3 = sin(time * 0.6 + pos.y * 0.0005) * 0.06;
+            vec2 dir3 = normalize(vec2(-0.6 + wave3, -0.8));
+            color += vec3(0.8) * rayIntensity(origin, dir3, pos, 0.012, 0.2);
             
-            float wave4 = cos(time * 1.2 + pos.x * 0.0007) * 0.08;
-            vec2 dir4 = normalize(vec2(0.5 + wave4, 0.9));
-            color += vec3(1.0) * rayIntensity(origin1, dir4, pos, 0.015, 0.25);
+            float wave4 = cos(time * 1.2 + pos.x * 0.0007) * 0.05;
+            vec2 dir4 = normalize(vec2(-0.5 + wave4, -0.9));
+            color += vec3(0.8) * rayIntensity(origin, dir4, pos, 0.015, 0.18);
             
-            // Additional diagonal rays for full coverage
-            float wave5 = sin(time * 1.5 + pos.y * 0.0004) * 0.06;
-            vec2 dir5 = normalize(vec2(-0.8, 0.6 + wave5));
-            color += vec3(1.0) * rayIntensity(origin3, dir5, pos, 0.018, 0.2);
-            
-            float wave6 = cos(time * 0.9 + pos.x * 0.0009) * 0.14;
-            vec2 dir6 = normalize(vec2(0.9 + wave6, -0.4));
-            color += vec3(1.0) * rayIntensity(origin2, dir6, pos, 0.011, 0.3);
+            float wave5 = sin(time * 1.5 + pos.y * 0.0004) * 0.04;
+            vec2 dir5 = normalize(vec2(-0.9, -0.4 + wave5));
+            color += vec3(0.8) * rayIntensity(origin, dir5, pos, 0.018, 0.15);
             
             gl_FragColor = vec4(color, 1.0);
           }
