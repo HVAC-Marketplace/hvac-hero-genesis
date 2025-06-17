@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Building, Wrench, Bot, Link, BarChart3, ArrowRight, RotateCcw } from 'lucide-react';
@@ -628,7 +627,7 @@ const AudienceSelection = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .perspective-1000 {
           perspective: 1000px;
         }
