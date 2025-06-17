@@ -6,6 +6,7 @@ const InteractiveSection = () => {
   const [isScrolling, setIsScrolling] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef(0);
+  const lastScrollTime = useRef(0);
   
   const sectionsData = [
     {
@@ -42,39 +43,30 @@ const InteractiveSection = () => {
     const sectionElement = sectionRef.current;
     if (!sectionElement) return;
 
-    let scrollTimeout: NodeJS.Timeout;
-
     const handleWheel = (e: WheelEvent) => {
       const rect = sectionElement.getBoundingClientRect();
       const mouseY = e.clientY;
       
-      // Simplified bounds checking - only check if section is visible
+      // Check if section is visible and mouse is in section
       const sectionVisible = rect.top <= window.innerHeight && rect.bottom >= 0;
       const mouseInSection = mouseY >= rect.top && mouseY <= rect.bottom;
       
-      // Allow scrolling if section is visible and mouse is in section
       if (!sectionVisible || !mouseInSection) {
-        return; // Don't prevent default - allow normal page scrolling
+        return; // Allow normal page scrolling
       }
       
-      // Only prevent default if we're handling the scroll
-      e.preventDefault();
-      
-      // Clear any existing timeout to allow immediate direction changes
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-        setIsScrolling(false);
-      }
-      
-      // Quick debounce check
-      if (isScrolling) {
-        console.log('Scroll blocked by debounce');
+      // Simple time-based debounce instead of state-based
+      const now = Date.now();
+      if (now - lastScrollTime.current < 800) {
+        console.log('Scroll blocked by time debounce');
+        e.preventDefault();
         return;
       }
+      
+      e.preventDefault();
+      lastScrollTime.current = now;
 
       console.log('Scroll detected, current index:', currentIndex, 'delta:', e.deltaY, 'sections length:', sectionsData.length);
-      
-      setIsScrolling(true);
       
       if (e.deltaY > 0 && currentIndex < sectionsData.length - 1) {
         // Scroll down - next section
@@ -85,17 +77,8 @@ const InteractiveSection = () => {
         console.log('Moving to previous section:', currentIndex - 1);
         setCurrentIndex(prev => prev - 1);
       } else {
-        // At boundaries - release scroll immediately
-        console.log('At boundary, releasing scroll immediately');
-        setIsScrolling(false);
-        return;
+        console.log('At boundary, allowing normal scroll');
       }
-
-      // Reset scrolling state after a shorter delay
-      scrollTimeout = setTimeout(() => {
-        setIsScrolling(false);
-        console.log('Scroll lock released after timeout');
-      }, 300);
     };
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -103,22 +86,19 @@ const InteractiveSection = () => {
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      if (isScrolling) return;
+      const now = Date.now();
+      if (now - lastScrollTime.current < 800) return;
 
       const touchEndY = e.changedTouches[0].clientY;
       const diff = touchStartY.current - touchEndY;
 
       if (Math.abs(diff) > 50) {
-        setIsScrolling(true);
+        lastScrollTime.current = now;
         if (diff > 0 && currentIndex < sectionsData.length - 1) {
           setCurrentIndex(prev => prev + 1);
         } else if (diff < 0 && currentIndex > 0) {
           setCurrentIndex(prev => prev - 1);
         }
-
-        setTimeout(() => {
-          setIsScrolling(false);
-        }, 300);
       }
     };
 
@@ -130,9 +110,8 @@ const InteractiveSection = () => {
       window.removeEventListener('wheel', handleWheel);
       sectionElement.removeEventListener('touchstart', handleTouchStart);
       sectionElement.removeEventListener('touchend', handleTouchEnd);
-      if (scrollTimeout) clearTimeout(scrollTimeout);
     };
-  }, [currentIndex, isScrolling, sectionsData.length]);
+  }, [currentIndex, sectionsData.length]);
 
   return (
     <div ref={sectionRef} className="relative">
@@ -141,7 +120,7 @@ const InteractiveSection = () => {
         {sectionsData.map((_, index) => (
           <button
             key={index}
-            onClick={() => !isScrolling && setCurrentIndex(index)}
+            onClick={() => setCurrentIndex(index)}
             className={`w-3 h-3 rounded-full border-2 border-white transition-all duration-300 ${
               currentIndex === index 
                 ? 'bg-white scale-125 shadow-lg shadow-white/50' 
