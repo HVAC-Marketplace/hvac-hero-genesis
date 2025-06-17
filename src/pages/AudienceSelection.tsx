@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -293,10 +292,8 @@ const AudienceSelection = () => {
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
       script.onload = () => {
         console.log('Three.js loaded successfully');
-        setTimeout(() => {
-          const cleanupShader = initShaderBackground();
-          const cleanupAurora = initAuroraBackground();
-        }, 100);
+        const cleanupShader = initShaderBackground();
+        const cleanupAurora = initAuroraBackground();
       };
       script.onerror = () => {
         console.error('Failed to load Three.js');
