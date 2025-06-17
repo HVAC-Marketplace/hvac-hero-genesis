@@ -28,6 +28,8 @@ const HeroSection = () => {
       try {
         const renderer = new window.THREE.WebGLRenderer({ canvas, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        
         const scene = new window.THREE.Scene();
         const camera = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         
@@ -42,14 +44,22 @@ const HeroSection = () => {
         // Create globe
         const globe = new window.THREE.Mesh(
           new window.THREE.SphereGeometry(1, 64, 64),
-          new window.THREE.MeshStandardMaterial({ color: 0x3b82f6, wireframe: true })
+          new window.THREE.MeshStandardMaterial({ 
+            color: 0x3b82f6, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.7
+          })
         );
         scene.add(globe);
         
         // Add lighting
-        const light = new window.THREE.PointLight(0xffffff, 1);
-        light.position.set(5, 3, 5);
-        scene.add(light);
+        const ambientLight = new window.THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
+        
+        const pointLight = new window.THREE.PointLight(0xffffff, 1);
+        pointLight.position.set(5, 3, 5);
+        scene.add(pointLight);
         
         let start = performance.now();
         let animationId: number;
@@ -129,8 +139,8 @@ const HeroSection = () => {
       {/* North America-Focused Globe Canvas */}
       <canvas 
         id="globeCanvas" 
-        className="absolute inset-0 w-full h-full -z-10 hidden md:block"
-        style={{ filter: 'opacity(0.3)' }}
+        className="absolute inset-0 w-full h-full -z-10 hidden sm:block"
+        style={{ filter: 'opacity(0.4)' }}
       />
 
       {/* Background Pattern */}
