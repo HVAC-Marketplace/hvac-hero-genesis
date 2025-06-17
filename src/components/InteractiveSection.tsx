@@ -48,42 +48,54 @@ const InteractiveSection = () => {
       const rect = sectionElement.getBoundingClientRect();
       const mouseY = e.clientY;
       
-      // Check if the section is visible and mouse is within bounds
-      const isInView = rect.top < window.innerHeight && rect.bottom > 0;
-      const isMouseInSection = mouseY >= rect.top && mouseY <= rect.bottom;
+      // Simplified bounds checking - only check if section is visible
+      const sectionVisible = rect.top <= window.innerHeight && rect.bottom >= 0;
+      const mouseInSection = mouseY >= rect.top && mouseY <= rect.bottom;
       
-      if (!isInView || !isMouseInSection) {
-        return;
+      // Allow scrolling if section is visible and mouse is in section
+      if (!sectionVisible || !mouseInSection) {
+        return; // Don't prevent default - allow normal page scrolling
       }
       
+      // Only prevent default if we're handling the scroll
       e.preventDefault();
       
-      // Prevent rapid scrolling but allow immediate direction changes
-      if (isScrolling) return;
+      // Clear any existing timeout to allow immediate direction changes
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+        setIsScrolling(false);
+      }
+      
+      // Quick debounce check
+      if (isScrolling) {
+        console.log('Scroll blocked by debounce');
+        return;
+      }
 
-      console.log('Scroll detected, current index:', currentIndex, 'delta:', e.deltaY);
+      console.log('Scroll detected, current index:', currentIndex, 'delta:', e.deltaY, 'sections length:', sectionsData.length);
       
       setIsScrolling(true);
       
-      if (e.deltaY > 0) {
+      if (e.deltaY > 0 && currentIndex < sectionsData.length - 1) {
         // Scroll down - next section
-        if (currentIndex < sectionsData.length - 1) {
-          console.log('Moving to next section:', currentIndex + 1);
-          setCurrentIndex(prev => prev + 1);
-        }
-      } else {
+        console.log('Moving to next section:', currentIndex + 1);
+        setCurrentIndex(prev => prev + 1);
+      } else if (e.deltaY < 0 && currentIndex > 0) {
         // Scroll up - previous section
-        if (currentIndex > 0) {
-          console.log('Moving to previous section:', currentIndex - 1);
-          setCurrentIndex(prev => prev - 1);
-        }
+        console.log('Moving to previous section:', currentIndex - 1);
+        setCurrentIndex(prev => prev - 1);
+      } else {
+        // At boundaries - release scroll immediately
+        console.log('At boundary, releasing scroll immediately');
+        setIsScrolling(false);
+        return;
       }
 
-      // Reset scrolling state after animation
+      // Reset scrolling state after a shorter delay
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
-        console.log('Scroll lock released');
-      }, 500);
+        console.log('Scroll lock released after timeout');
+      }, 300);
     };
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -98,21 +110,15 @@ const InteractiveSection = () => {
 
       if (Math.abs(diff) > 50) {
         setIsScrolling(true);
-        if (diff > 0) {
-          // Swipe up (next section)
-          if (currentIndex < sectionsData.length - 1) {
-            setCurrentIndex(prev => prev + 1);
-          }
-        } else {
-          // Swipe down (previous section)
-          if (currentIndex > 0) {
-            setCurrentIndex(prev => prev - 1);
-          }
+        if (diff > 0 && currentIndex < sectionsData.length - 1) {
+          setCurrentIndex(prev => prev + 1);
+        } else if (diff < 0 && currentIndex > 0) {
+          setCurrentIndex(prev => prev - 1);
         }
 
-        scrollTimeout = setTimeout(() => {
+        setTimeout(() => {
           setIsScrolling(false);
-        }, 500);
+        }, 300);
       }
     };
 
