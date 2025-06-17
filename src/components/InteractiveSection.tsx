@@ -4,7 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 const InteractiveSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef(0);
+  
   const sectionsData = [
     {
       id: 'transform',
@@ -37,9 +39,18 @@ const InteractiveSection = () => {
   ];
 
   useEffect(() => {
+    const sectionElement = sectionRef.current;
+    if (!sectionElement) return;
+
     let scrollTimeout: NodeJS.Timeout;
 
     const handleWheel = (e: WheelEvent) => {
+      // Only handle wheel events when mouse is over the interactive section
+      const rect = sectionElement.getBoundingClientRect();
+      const mouseY = e.clientY;
+      
+      if (mouseY < rect.top || mouseY > rect.bottom) return;
+      
       e.preventDefault();
       if (isScrolling) return;
 
@@ -91,44 +102,20 @@ const InteractiveSection = () => {
       }
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isScrolling) return;
-      
-      if (e.key === 'ArrowDown' || e.key === ' ') {
-        e.preventDefault();
-        if (currentIndex < sectionsData.length - 1) {
-          setCurrentIndex(prev => prev + 1);
-          setIsScrolling(true);
-          scrollTimeout = setTimeout(() => setIsScrolling(false), 1200);
-        }
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (currentIndex > 0) {
-          setCurrentIndex(prev => prev - 1);
-          setIsScrolling(true);
-          scrollTimeout = setTimeout(() => setIsScrolling(false), 1200);
-        }
-      }
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchend', handleTouchEnd);
-    window.addEventListener('keydown', handleKeyDown);
+    sectionElement.addEventListener('wheel', handleWheel, { passive: false });
+    sectionElement.addEventListener('touchstart', handleTouchStart);
+    sectionElement.addEventListener('touchend', handleTouchEnd);
 
     return () => {
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('keydown', handleKeyDown);
+      sectionElement.removeEventListener('wheel', handleWheel);
+      sectionElement.removeEventListener('touchstart', handleTouchStart);
+      sectionElement.removeEventListener('touchend', handleTouchEnd);
       if (scrollTimeout) clearTimeout(scrollTimeout);
     };
   }, [currentIndex, isScrolling, sectionsData.length]);
 
-  console.log('Current section index:', currentIndex);
-
   return (
-    <div className="relative">
+    <div ref={sectionRef} className="relative">
       {/* Progress Dots */}
       <div className="fixed right-8 top-1/2 transform -translate-y-1/2 z-50 space-y-4">
         {sectionsData.map((_, index) => (
@@ -258,7 +245,7 @@ const InteractiveSection = () => {
       </section>
 
       {/* Scroll hint */}
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 text-white/60 text-sm animate-bounce">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50 text-white/60 text-sm animate-bounce">
         <div className="flex flex-col items-center space-y-2">
           <span>Scroll to explore</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
