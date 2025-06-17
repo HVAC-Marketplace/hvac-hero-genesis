@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 const InteractiveSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -11,13 +12,25 @@ const InteractiveSection = () => {
 
     console.log('Setting up intersection observer for InteractiveSection');
 
-    // Simplified intersection observer - just track visibility
     const observer = new IntersectionObserver(
       ([entry]) => {
         console.log('Intersection observer triggered:', entry.isIntersecting, 'Intersection ratio:', entry.intersectionRatio);
-        setIsVisible(entry.isIntersecting && entry.intersectionRatio > 0.1);
+        
+        if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+          console.log('Section is visible - triggering animations');
+          setIsVisible(true);
+          setHasAnimated(true);
+        } else if (entry.intersectionRatio < 0.1) {
+          console.log('Section is not visible - resetting animations');
+          setIsVisible(false);
+          // Reset animation state when completely out of view
+          setTimeout(() => setHasAnimated(false), 100);
+        }
       },
-      { threshold: 0.1 }
+      { 
+        threshold: [0, 0.1, 0.3, 0.5, 0.7],
+        rootMargin: '-10% 0px -10% 0px'
+      }
     );
 
     observer.observe(section);
@@ -43,7 +56,10 @@ const InteractiveSection = () => {
     return () => observer.disconnect();
   }, []);
 
-  console.log('InteractiveSection render - isVisible:', isVisible);
+  console.log('InteractiveSection render - isVisible:', isVisible, 'hasAnimated:', hasAnimated);
+
+  // Create a key that changes when we want to restart animations
+  const animationKey = `${isVisible}-${hasAnimated}`;
 
   return (
     <section 
@@ -66,7 +82,7 @@ const InteractiveSection = () => {
       </div>
 
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center p-8 max-w-4xl mx-auto">
+        <div key={animationKey} className="text-center p-8 max-w-4xl mx-auto">
           
           {/* SLIDE 1: Main headline slides in from FAR LEFT */}
           <h2 className={`text-6xl md:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1200 ease-out ${
