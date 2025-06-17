@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 
 const InteractiveSection = () => {
@@ -38,7 +37,7 @@ const InteractiveSection = () => {
       bgImage: "url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')"
     }
   ];
-
+  
   useEffect(() => {
     const sectionElement = sectionRef.current;
     if (!sectionElement) return;
@@ -131,8 +130,8 @@ const InteractiveSection = () => {
         ))}
       </div>
 
-      {/* Single Section Container */}
-      <section className="relative h-screen w-full overflow-hidden">
+      {/* Single Section Container - Changed from h-screen to h-[80vh] */}
+      <section className="relative h-[80vh] w-full overflow-hidden">
         {sectionsData.map((section, index) => (
           <div
             key={section.id}
@@ -162,8 +161,8 @@ const InteractiveSection = () => {
             <div className="relative z-10 h-full flex items-center justify-center">
               <div className="text-center p-8 max-w-4xl mx-auto">
                 
-                {/* Main headline */}
-                <h2 className={`text-6xl md:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1000 ease-out ${
+                {/* Main headline - Reduced text size */}
+                <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight transition-all duration-1000 ease-out ${
                   currentIndex === index 
                     ? 'translate-x-0 opacity-100' 
                     : '-translate-x-32 opacity-0'
@@ -177,8 +176,8 @@ const InteractiveSection = () => {
                   </span>
                 </h2>
 
-                {/* Subtitle */}
-                <p className={`text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed transition-all duration-1000 ease-out delay-200 ${
+                {/* Subtitle - Reduced text size and margin */}
+                <p className={`text-lg md:text-xl text-gray-200 mb-6 max-w-2xl mx-auto leading-relaxed transition-all duration-1000 ease-out delay-200 ${
                   currentIndex === index 
                     ? 'translate-x-0 opacity-100' 
                     : 'translate-x-32 opacity-0'
@@ -186,9 +185,9 @@ const InteractiveSection = () => {
                   {section.description}
                 </p>
 
-                {/* Feature cards for section 1 */}
+                {/* Feature cards for section 1 - Reduced margin */}
                 {index === 0 && (
-                  <div className={`grid md:grid-cols-3 gap-6 mb-10 transition-all duration-1000 ease-out delay-400 ${
+                  <div className={`grid md:grid-cols-3 gap-4 mb-6 transition-all duration-1000 ease-out delay-400 ${
                     currentIndex === index 
                       ? 'translate-y-0 opacity-100' 
                       : 'translate-y-32 opacity-0'
@@ -200,13 +199,13 @@ const InteractiveSection = () => {
                     ].map((feature, featureIndex) => (
                       <div 
                         key={feature.title}
-                        className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 hover:bg-white/20 hover:scale-105 transition-all duration-700 ease-out group"
+                        className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white/20 hover:scale-105 transition-all duration-700 ease-out group"
                         style={{ transitionDelay: `${600 + featureIndex * 200}ms` }}
                       >
-                        <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                        <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">
                           {feature.icon}
                         </div>
-                        <h3 className="text-white font-semibold text-lg mb-2">{feature.title}</h3>
+                        <h3 className="text-white font-semibold text-base mb-1">{feature.title}</h3>
                         <p className="text-gray-300 text-sm">{feature.desc}</p>
                       </div>
                     ))}
@@ -217,15 +216,15 @@ const InteractiveSection = () => {
                 <div className={`transition-all duration-1000 ease-out delay-600 ${
                   currentIndex === index 
                     ? 'translate-y-0 opacity-100' 
-                    : '-translate-y-32 opacity-0'
+                    : 'translate-y-32 opacity-0'
                 }`}>
                   <a 
                     href="#services" 
-                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-lg font-semibold rounded-xl hover:from-blue-500 hover:to-blue-400 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 ease-out group"
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-base font-semibold rounded-xl hover:from-blue-500 hover:to-blue-400 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 ease-out group"
                   >
                     {index === sectionsData.length - 1 ? 'Get Started Now' : 'Learn More'}
                     <svg 
-                      className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" 
+                      className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" 
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
@@ -238,13 +237,13 @@ const InteractiveSection = () => {
             </div>
 
             {/* Bottom fade effect */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/50 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/50 to-transparent"></div>
           </div>
         ))}
       </section>
 
       {/* Scroll hint */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50 text-white/60 text-sm animate-bounce">
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50 text-white/60 text-sm animate-bounce">
         <div className="flex flex-col items-center space-y-2">
           <span>Scroll to explore</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
