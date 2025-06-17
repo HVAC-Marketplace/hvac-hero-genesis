@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,7 @@ const HeroSection = () => {
     if (prefersReducedMotion || isMobile) return;
 
     let phi = 0;
-    let scale = 2.2; // Start zoomed in closer on North America
+    let scale = 3.5; // Start zoomed in much closer on North America
     let isRotating = false;
 
     // Load COBE library and initialize globe
@@ -33,7 +32,7 @@ const HeroSection = () => {
 
         console.log('Initializing COBE globe...');
 
-        // Create globe with dark theme and bright markers
+        // Create globe with dark theme and consistent markers
         globeRef.current = createGlobe(canvas, {
           devicePixelRatio: 2,
           width: 1000,
@@ -50,24 +49,23 @@ const HeroSection = () => {
           glowColor: [0.1, 0.2, 0.4], // Subtle blue glow
           offset: [0, 0],
           markers: [
-            // North America focus - bright white markers
-            { location: [40.7128, -74.006], size: 0.08 }, // New York
-            { location: [34.0522, -118.2437], size: 0.07 }, // Los Angeles
-            { location: [41.8781, -87.6298], size: 0.06 }, // Chicago
-            { location: [39.7392, -104.9903], size: 0.05 }, // Denver
-            { location: [25.7617, -80.1918], size: 0.04 }, // Miami
-            { location: [47.6062, -122.3321], size: 0.04 }, // Seattle
-            { location: [29.7604, -95.3698], size: 0.04 }, // Houston
-            { location: [33.4484, -112.0740], size: 0.04 }, // Phoenix
-            { location: [43.6532, -79.3832], size: 0.04 }, // Toronto
+            // All markers with consistent size - no larger dots
+            { location: [40.7128, -74.006], size: 0.03 }, // New York
+            { location: [34.0522, -118.2437], size: 0.03 }, // Los Angeles
+            { location: [41.8781, -87.6298], size: 0.03 }, // Chicago
+            { location: [39.7392, -104.9903], size: 0.03 }, // Denver
+            { location: [25.7617, -80.1918], size: 0.03 }, // Miami
+            { location: [47.6062, -122.3321], size: 0.03 }, // Seattle
+            { location: [29.7604, -95.3698], size: 0.03 }, // Houston
+            { location: [33.4484, -112.0740], size: 0.03 }, // Phoenix
+            { location: [43.6532, -79.3832], size: 0.03 }, // Toronto
             { location: [45.5017, -73.5673], size: 0.03 }, // Montreal
-            // International locations - dimmer
             { location: [51.5074, -0.1278], size: 0.03 }, // London
             { location: [35.6762, 139.6503], size: 0.03 }, // Tokyo
-            { location: [-33.8688, 151.2093], size: 0.02 }, // Sydney
-            { location: [22.3193, 114.1694], size: 0.02 }, // Hong Kong
+            { location: [-33.8688, 151.2093], size: 0.03 }, // Sydney
+            { location: [22.3193, 114.1694], size: 0.03 }, // Hong Kong
           ],
-          onRender: (state) => {
+          onRender: (state: any) => {
             state.phi = phi;
             state.scale = scale;
             if (isRotating) {
@@ -94,11 +92,11 @@ const HeroSection = () => {
       if (scrollY > scrollThreshold) {
         // Gradually zoom out and start rotating
         const scrollProgress = Math.min((scrollY - scrollThreshold) / windowHeight, 1);
-        scale = 2.2 - (scrollProgress * 0.8); // Zoom out from 2.2 to 1.4
+        scale = 3.5 - (scrollProgress * 1.5); // Zoom out from 3.5 to 2.0
         isRotating = scrollProgress > 0.3; // Start rotating after 30% scroll progress
       } else {
         // Reset to initial state
-        scale = 2.2;
+        scale = 3.5;
         isRotating = false;
         phi = 0; // Reset rotation
       }
