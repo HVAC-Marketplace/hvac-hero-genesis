@@ -94,26 +94,12 @@ const AudienceSelection = () => {
   }, []);
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{
-      background: 'radial-gradient(circle at 30% 10%, rgba(255,242,252,1) 0%, rgba(230,240,255,1) 100%)'
-    }}>
+    <div className="min-h-screen relative overflow-hidden bg-gray-50">
       {/* Animated Shader Background */}
       <canvas id="branchShader" className="fixed inset-0 w-full h-full -z-10"></canvas>
 
-      {/* Sparkle Animation */}
-      <div className="absolute top-20 left-20 text-pink-300 text-xl animate-spin">✦</div>
-      <div className="absolute top-40 right-32 text-blue-300 text-lg animate-spin" style={{animationDelay: '2s'}}>✦</div>
-      <div className="absolute bottom-32 left-32 text-purple-300 text-sm animate-spin" style={{animationDelay: '4s'}}>✦</div>
-
       <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8">
-        {/* Main Glass Panel Container */}
-        <div className="glass-panel max-w-2xl w-full mx-auto text-center" style={{
-          background: 'rgba(255,255,255,0.3)',
-          backdropFilter: 'blur(12px)',
-          borderRadius: '1rem',
-          padding: '2rem',
-          border: '1px solid rgba(255,255,255,0.2)'
-        }}>
+        <div className="max-w-2xl w-full mx-auto text-center">
           <h1 className="text-4xl font-medium text-gray-800 mb-2">
             Welcome to HVAC Marketplace
           </h1>
@@ -124,65 +110,26 @@ const AudienceSelection = () => {
           <div className="space-y-4">
             <button
               onClick={() => handleAudienceSelection('homeowner')}
-              className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:scale-105"
+              className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Homeowners & Residential
             </button>
             
             <button
               onClick={() => handleAudienceSelection('business')}
-              className="w-full px-6 py-4 border-2 border-blue-600 text-blue-600 bg-white hover:bg-blue-50 rounded-lg text-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:scale-105"
+              className="w-full px-6 py-4 border-2 border-blue-600 text-blue-600 bg-white hover:bg-blue-50 rounded-lg text-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Businesses & Organizations
             </button>
             
             <button
               onClick={() => handleAudienceSelection('contractor')}
-              className="w-full px-6 py-4 text-blue-600 hover:text-blue-800 underline bg-transparent text-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg hover:bg-white/20"
+              className="w-full px-6 py-4 text-blue-600 hover:text-blue-800 underline bg-transparent text-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg"
             >
               Professional Contractors & Technicians
             </button>
           </div>
         </div>
-
-        {/* Feature Callouts */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl w-full">
-          <div className="bg-white/70 backdrop-blur-md p-4 rounded-lg flex flex-col items-center text-center hover:bg-white/80 transition-all duration-200">
-            <Shield className="w-6 h-6 text-blue-600 mb-2" />
-            <h3 className="font-medium text-gray-800">Certified Contractors</h3>
-            <p className="text-sm text-gray-600 mt-1">Verified professionals</p>
-          </div>
-          <div className="bg-white/70 backdrop-blur-md p-4 rounded-lg flex flex-col items-center text-center hover:bg-white/80 transition-all duration-200">
-            <Wrench className="w-6 h-6 text-blue-600 mb-2" />
-            <h3 className="font-medium text-gray-800">Vast Product Catalog</h3>
-            <p className="text-sm text-gray-600 mt-1">Everything you need</p>
-          </div>
-          <div className="bg-white/70 backdrop-blur-md p-4 rounded-lg flex flex-col items-center text-center hover:bg-white/80 transition-all duration-200">
-            <Clock className="w-6 h-6 text-blue-600 mb-2" />
-            <h3 className="font-medium text-gray-800">24/7 Expert Support</h3>
-            <p className="text-sm text-gray-600 mt-1">Always here to help</p>
-          </div>
-        </div>
-
-        {/* Platform Benefits Grid */}
-        <section className="mt-12 px-4 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-6 bg-white/80 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
-            <h4 className="font-semibold text-lg text-gray-800">Free & Fast Shipping</h4>
-            <p className="mt-2 text-gray-600">On orders over $1,000</p>
-          </div>
-          <div className="p-6 bg-white/80 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
-            <h4 className="font-semibold text-lg text-gray-800">Trusted by Pros</h4>
-            <p className="mt-2 text-gray-600">500+ verified contractors</p>
-          </div>
-          <div className="p-6 bg-white/80 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
-            <h4 className="font-semibold text-lg text-gray-800">Energy Savings Tools</h4>
-            <p className="mt-2 text-gray-600">Lifetime kWh calculator</p>
-          </div>
-          <div className="p-6 bg-white/80 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
-            <h4 className="font-semibold text-lg text-gray-800">Satisfaction Guarantee</h4>
-            <p className="mt-2 text-gray-600">98% customer satisfaction</p>
-          </div>
-        </section>
       </div>
     </div>
   );
