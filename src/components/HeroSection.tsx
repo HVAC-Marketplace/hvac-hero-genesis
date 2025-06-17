@@ -1,9 +1,12 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const HeroSection = () => {
+  const globeRef = useRef<any>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
     // Only initialize globe on desktop and when user doesn't prefer reduced motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -12,14 +15,16 @@ const HeroSection = () => {
     if (prefersReducedMotion || isMobile) return;
 
     let phi = 0;
-    let globe: any = null;
+    let scale = 1.8; // Start zoomed in on North America
+    let isRotating = false;
 
     // Load COBE library and initialize globe
     const initializeGlobe = async () => {
       try {
-        // Import COBE from CDN
-        const createGlobe = await import('https://cdn.skypack.dev/cobe').then(m => m.default);
-        const canvas = document.getElementById('globeCanvas') as HTMLCanvasElement;
+        // Import COBE from CDN using dynamic import
+        const cobeModule = await import('https://cdn.skypack.dev/cobe');
+        const createGlobe = cobeModule.default;
+        const canvas = canvasRef.current;
         
         if (!canvas || !createGlobe) {
           console.log('Missing canvas or COBE library');
@@ -28,41 +33,46 @@ const HeroSection = () => {
 
         console.log('Initializing COBE globe...');
 
-        // Create globe with HVAC marketplace styling
-        globe = createGlobe(canvas, {
+        // Create globe with dark theme and bright markers
+        globeRef.current = createGlobe(canvas, {
           devicePixelRatio: 2,
           width: 1000,
           height: 1000,
           phi: 0,
-          theta: 0,
+          theta: 0.3, // Angle to show North America initially
           dark: 1,
           diffuse: 1.2,
-          scale: 1,
+          scale: scale,
           mapSamples: 16000,
           mapBrightness: 6,
-          baseColor: [0.1, 0.1, 0.3], // Dark blue base
-          markerColor: [0.3, 0.6, 1], // Bright blue markers
-          glowColor: [0.2, 0.4, 1], // Blue glow
+          baseColor: [0.05, 0.05, 0.1], // Very dark blue/black
+          markerColor: [1, 1, 1], // Bright white markers
+          glowColor: [0.1, 0.2, 0.4], // Subtle blue glow
           offset: [0, 0],
           markers: [
-            // North America focus
-            { location: [40.7128, -74.006], size: 0.1 }, // New York
-            { location: [34.0522, -118.2437], size: 0.08 }, // Los Angeles
-            { location: [41.8781, -87.6298], size: 0.07 }, // Chicago
-            { location: [39.7392, -104.9903], size: 0.06 }, // Denver
-            { location: [25.7617, -80.1918], size: 0.05 }, // Miami
-            { location: [47.6062, -122.3321], size: 0.05 }, // Seattle
-            { location: [29.7604, -95.3698], size: 0.05 }, // Houston
+            // North America focus - bright white markers
+            { location: [40.7128, -74.006], size: 0.08 }, // New York
+            { location: [34.0522, -118.2437], size: 0.07 }, // Los Angeles
+            { location: [41.8781, -87.6298], size: 0.06 }, // Chicago
+            { location: [39.7392, -104.9903], size: 0.05 }, // Denver
+            { location: [25.7617, -80.1918], size: 0.04 }, // Miami
+            { location: [47.6062, -122.3321], size: 0.04 }, // Seattle
+            { location: [29.7604, -95.3698], size: 0.04 }, // Houston
             { location: [33.4484, -112.0740], size: 0.04 }, // Phoenix
-            // International locations
-            { location: [51.5074, -0.1278], size: 0.04 }, // London
-            { location: [35.6762, 139.6503], size: 0.04 }, // Tokyo
-            { location: [-33.8688, 151.2093], size: 0.03 }, // Sydney
-            { location: [22.3193, 114.1694], size: 0.03 }, // Hong Kong
+            { location: [43.6532, -79.3832], size: 0.04 }, // Toronto
+            { location: [45.5017, -73.5673], size: 0.03 }, // Montreal
+            // International locations - dimmer
+            { location: [51.5074, -0.1278], size: 0.03 }, // London
+            { location: [35.6762, 139.6503], size: 0.03 }, // Tokyo
+            { location: [-33.8688, 151.2093], size: 0.02 }, // Sydney
+            { location: [22.3193, 114.1694], size: 0.02 }, // Hong Kong
           ],
           onRender: (state) => {
             state.phi = phi;
-            phi += 0.003; // Slower rotation
+            state.scale = scale;
+            if (isRotating) {
+              phi += 0.005; // Slow rotation when scrolling
+            }
           },
         });
 
@@ -73,13 +83,38 @@ const HeroSection = () => {
       }
     };
 
+    // Scroll handler for zoom out and rotation
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      
+      // Start effects after scrolling 10% of viewport
+      const scrollThreshold = windowHeight * 0.1;
+      
+      if (scrollY > scrollThreshold) {
+        // Gradually zoom out and start rotating
+        const scrollProgress = Math.min((scrollY - scrollThreshold) / windowHeight, 1);
+        scale = 1.8 - (scrollProgress * 0.6); // Zoom out from 1.8 to 1.2
+        isRotating = scrollProgress > 0.3; // Start rotating after 30% scroll progress
+      } else {
+        // Reset to initial state
+        scale = 1.8;
+        isRotating = false;
+        phi = 0; // Reset rotation
+      }
+    };
+
     initializeGlobe();
+    
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     // Cleanup function
     return () => {
-      if (globe) {
-        globe.destroy?.();
+      if (globeRef.current) {
+        globeRef.current.destroy?.();
       }
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -96,10 +131,26 @@ const HeroSection = () => {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-800/30 via-slate-900/50 to-slate-900/70" style={{ zIndex: 3 }} />
 
+      {/* Globe - positioned behind text content */}
+      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 hidden lg:block" style={{ zIndex: 10 }}>
+        <div className="relative h-[600px] w-[600px]">
+          {/* Glow effect behind globe */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 rounded-full blur-3xl"></div>
+          {/* COBE Globe Canvas */}
+          <canvas
+            ref={canvasRef}
+            style={{ width: '600px', height: '600px' }}
+            width="1000"
+            height="1000"
+            className="relative z-10"
+          />
+        </div>
+      </div>
+
       <div className="relative container mx-auto px-4 py-16 lg:py-24" style={{ zIndex: 20 }}>
         <div className="flex flex-col lg:flex-row items-center">
-          {/* Text Content */}
-          <div className="lg:w-1/2 mb-12 lg:mb-0 lg:pr-12 animate-fade-in">
+          {/* Text Content - now in front of globe */}
+          <div className="lg:w-3/5 mb-12 lg:mb-0 lg:pr-12 animate-fade-in relative z-30">
             {/* Headline */}
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-light leading-tight mb-6 text-white">
               <span className="bg-blue-gradient bg-clip-text text-transparent">
@@ -139,26 +190,10 @@ const HeroSection = () => {
               </button>
             </div>
           </div>
-          
-          {/* Globe Visualization */}
-          <div className="lg:w-1/2 relative hidden lg:block">
-            <div className="relative h-[500px] w-[500px] mx-auto">
-              {/* Glow effect behind globe */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl"></div>
-              {/* COBE Globe Canvas */}
-              <canvas
-                id="globeCanvas"
-                style={{ width: '500px', height: '500px' }}
-                width="1000"
-                height="1000"
-                className="relative z-10"
-              />
-            </div>
-          </div>
         </div>
 
         {/* Statistics Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 animate-slide-up">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 animate-slide-up relative z-30">
           <div className="text-center group">
             <div className="text-3xl md:text-4xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
               500<span className="text-blue-400">+</span>
@@ -189,7 +224,7 @@ const HeroSection = () => {
         </div>
 
         {/* Trust Badges */}
-        <div className="flex flex-wrap justify-center items-center gap-8 text-slate-500 text-sm font-medium mt-16 animate-slide-up">
+        <div className="flex flex-wrap justify-center items-center gap-8 text-slate-500 text-sm font-medium mt-16 animate-slide-up relative z-30">
           <div className="flex items-center gap-2 hover:text-slate-400 transition-colors duration-300">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             EPA Certified
