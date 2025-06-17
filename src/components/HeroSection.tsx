@@ -27,6 +27,7 @@ const HeroSection = () => {
       const canvas = document.getElementById('globeCanvas');
       console.log('Canvas found:', canvas);
       console.log('THREE loaded:', !!window.THREE);
+      console.log('Canvas dimensions:', canvas?.offsetWidth, 'x', canvas?.offsetHeight);
       
       if (!canvas || !window.THREE) return;
 
@@ -37,79 +38,43 @@ const HeroSection = () => {
           antialias: true
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x000000, 0);
+        renderer.setClearColor(0x000000, 0); // Transparent background
         
         const scene = new window.THREE.Scene();
         const camera = new window.THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         
-        // Define initial and target camera positions (spherical coordinates)
-        const initialPos = { r: 2.5, phi: 0, theta: 0 };
-        const targetPos = { r: 1.5, phi: Math.PI / 4, theta: -Math.PI / 2 }; // Focus on North America
-        
-        // Set initial camera position
-        camera.position.setFromSpherical(new window.THREE.Spherical(initialPos.r, initialPos.phi, initialPos.theta));
-        camera.lookAt(0, 0, 0);
-        
-        // Create globe with solid material for better visibility
+        // Create a more visible globe with solid material
         const globe = new window.THREE.Mesh(
-          new window.THREE.SphereGeometry(1, 32, 32),
-          new window.THREE.MeshPhongMaterial({ 
-            color: 0x3b82f6,
+          new window.THREE.SphereGeometry(1.2, 32, 32), // Slightly larger
+          new window.THREE.MeshBasicMaterial({ 
+            color: 0x60a5fa, // Brighter blue
             wireframe: true,
-            wireframeLinewidth: 2
+            wireframeLinewidth: 3
           })
         );
         scene.add(globe);
         
-        // Add strong lighting
-        const ambientLight = new window.THREE.AmbientLight(0x404040, 1);
-        scene.add(ambientLight);
+        // Position camera closer
+        camera.position.set(0, 0, 3);
+        camera.lookAt(0, 0, 0);
         
-        const pointLight = new window.THREE.PointLight(0xffffff, 2);
-        pointLight.position.set(10, 10, 10);
-        scene.add(pointLight);
+        console.log('Globe created and added to scene');
+        console.log('Camera position:', camera.position);
+        console.log('Globe position:', globe.position);
         
-        console.log('Globe scene setup complete');
-        
-        let start = performance.now();
         let animationId: number;
         
-        function animate(time: number) {
-          const t = (time - start) / 1000; // Time in seconds
-          
-          if (t < 2) {
-            // Phase 1: Slow global spin for 2 seconds
-            globe.rotation.y += 0.005; // More visible rotation
-          } else if (t < 6) {
-            // Phase 2: Zoom and pan to North America over 4 seconds (2-6s)
-            const u = (t - 2) / 4; // Normalized progress (0-1)
-            
-            // Smooth easing function
-            const easedU = u * u * (3 - 2 * u); // smoothstep
-            
-            // Interpolate spherical coordinates
-            const r = initialPos.r + (targetPos.r - initialPos.r) * easedU;
-            const phi = initialPos.phi + (targetPos.phi - initialPos.phi) * easedU;
-            const theta = initialPos.theta + (targetPos.theta - initialPos.theta) * easedU;
-            
-            camera.position.setFromSpherical(new window.THREE.Spherical(r, phi, theta));
-            camera.lookAt(0, 0, 0);
-            
-            // Continue rotation during zoom
-            globe.rotation.y += 0.005;
-          }
-          // Phase 3: After 6 seconds, stop all animation and hold position
+        function animate() {
+          // Simple continuous rotation
+          globe.rotation.y += 0.01;
+          globe.rotation.x += 0.005;
           
           renderer.render(scene, camera);
-          
-          // Continue animation for first 6 seconds only
-          if (t < 6) {
-            animationId = requestAnimationFrame(animate);
-          }
+          animationId = requestAnimationFrame(animate);
         }
         
-        animationId = requestAnimationFrame(animate);
-        console.log('Animation started');
+        animate();
+        console.log('Animation loop started');
         
         const handleResize = () => {
           renderer.setSize(window.innerWidth, window.innerHeight);
@@ -147,15 +112,19 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen bg-slate-900 overflow-hidden font-inter section-wave">
-      {/* North America-Focused Globe Canvas */}
+      {/* Simple Globe Canvas - positioned behind content */}
       <canvas 
         id="globeCanvas" 
-        className="absolute inset-0 w-full h-full z-0 hidden sm:block"
-        style={{ opacity: 0.8 }}
+        className="absolute inset-0 w-full h-full hidden sm:block"
+        style={{ 
+          zIndex: 1,
+          opacity: 0.3,
+          pointerEvents: 'none'
+        }}
       />
 
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-5" style={{ zIndex: 2 }}>
         <div className="absolute inset-0" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='1.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           backgroundSize: '60px 60px'
@@ -163,9 +132,9 @@ const HeroSection = () => {
       </div>
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 via-slate-900/80 to-slate-900" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 via-slate-900/80 to-slate-900" style={{ zIndex: 3 }} />
 
-      <div className="relative container mx-auto px-4 py-16 lg:py-24 z-10">
+      <div className="relative container mx-auto px-4 py-16 lg:py-24" style={{ zIndex: 10 }}>
         {/* Main Hero Content */}
         <div className="max-w-6xl mx-auto text-center animate-fade-in">
           {/* Headline */}
@@ -264,7 +233,7 @@ const HeroSection = () => {
       </div>
 
       {/* Bottom Gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-900 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-900 to-transparent" style={{ zIndex: 5 }}></div>
     </section>
   );
 };
