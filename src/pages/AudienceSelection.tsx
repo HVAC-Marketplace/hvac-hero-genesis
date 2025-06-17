@@ -406,17 +406,13 @@ const AudienceSelection = () => {
           <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl">
             {/* Header */}
             <div className="text-center mb-6">
-              {/* Brand Logo with Professional Background */}
-              <div className="inline-flex items-center justify-center mb-3 relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 shadow-lg overflow-hidden">
-                  <img 
-                    src="/lovable-uploads/285c4d5c-0439-42e9-9ea6-a7a05b9c8489.png" 
-                    alt="HVAC Marketplace Logo" 
-                    className="w-14 h-14 object-contain"
-                  />
-                </div>
-                {/* Subtle outer glow effect */}
-                <div className="absolute inset-0 w-20 h-20 bg-gradient-to-br from-blue-400/10 to-orange-400/10 rounded-full blur-2xl opacity-80"></div>
+              {/* Brand Logo - Larger and without glass circle */}
+              <div className="inline-flex items-center justify-center mb-3">
+                <img 
+                  src="/lovable-uploads/285c4d5c-0439-42e9-9ea6-a7a05b9c8489.png" 
+                  alt="HVAC Marketplace Logo" 
+                  className="w-24 h-24 object-contain"
+                />
               </div>
               <h1 className="text-2xl font-light text-white mb-2 tracking-wide">
                 Welcome to the HVAC Marketplace
