@@ -45,11 +45,14 @@ const InteractiveSection = () => {
     let scrollTimeout: NodeJS.Timeout;
 
     const handleWheel = (e: WheelEvent) => {
-      // Only handle wheel events when mouse is over the interactive section
+      // Check if we're within the interactive section bounds
       const rect = sectionElement.getBoundingClientRect();
       const mouseY = e.clientY;
       
-      if (mouseY < rect.top || mouseY > rect.bottom) return;
+      // Only handle if mouse is within the section AND section is visible
+      if (mouseY < rect.top || mouseY > rect.bottom || rect.top > window.innerHeight || rect.bottom < 0) {
+        return;
+      }
       
       e.preventDefault();
       if (isScrolling) return;
@@ -69,7 +72,7 @@ const InteractiveSection = () => {
 
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
-      }, 1200);
+      }, 800); // Reduced timeout for better responsiveness
     };
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -98,16 +101,17 @@ const InteractiveSection = () => {
 
         scrollTimeout = setTimeout(() => {
           setIsScrolling(false);
-        }, 1200);
+        }, 800);
       }
     };
 
-    sectionElement.addEventListener('wheel', handleWheel, { passive: false });
+    // Use window events but with improved detection
+    window.addEventListener('wheel', handleWheel, { passive: false });
     sectionElement.addEventListener('touchstart', handleTouchStart);
     sectionElement.addEventListener('touchend', handleTouchEnd);
 
     return () => {
-      sectionElement.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('wheel', handleWheel);
       sectionElement.removeEventListener('touchstart', handleTouchStart);
       sectionElement.removeEventListener('touchend', handleTouchEnd);
       if (scrollTimeout) clearTimeout(scrollTimeout);
@@ -137,7 +141,7 @@ const InteractiveSection = () => {
         {sectionsData.map((section, index) => (
           <div
             key={section.id}
-            className={`absolute inset-0 transition-all duration-1000 ease-out ${
+            className={`absolute inset-0 transition-all duration-700 ease-out ${
               currentIndex === index 
                 ? 'opacity-100 scale-100 z-10' 
                 : 'opacity-0 scale-95 z-0'
@@ -164,7 +168,7 @@ const InteractiveSection = () => {
               <div className="text-center p-8 max-w-4xl mx-auto">
                 
                 {/* Main headline */}
-                <h2 className={`text-6xl md:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1200 ease-out ${
+                <h2 className={`text-6xl md:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1000 ease-out ${
                   currentIndex === index 
                     ? 'translate-x-0 opacity-100' 
                     : '-translate-x-32 opacity-0'
@@ -179,7 +183,7 @@ const InteractiveSection = () => {
                 </h2>
 
                 {/* Subtitle */}
-                <p className={`text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed transition-all duration-1200 ease-out delay-300 ${
+                <p className={`text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed transition-all duration-1000 ease-out delay-200 ${
                   currentIndex === index 
                     ? 'translate-x-0 opacity-100' 
                     : 'translate-x-32 opacity-0'
@@ -189,7 +193,7 @@ const InteractiveSection = () => {
 
                 {/* Feature cards for section 1 */}
                 {index === 0 && (
-                  <div className={`grid md:grid-cols-3 gap-6 mb-10 transition-all duration-1200 ease-out delay-600 ${
+                  <div className={`grid md:grid-cols-3 gap-6 mb-10 transition-all duration-1000 ease-out delay-400 ${
                     currentIndex === index 
                       ? 'translate-y-0 opacity-100' 
                       : 'translate-y-32 opacity-0'
@@ -202,7 +206,7 @@ const InteractiveSection = () => {
                       <div 
                         key={feature.title}
                         className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 hover:bg-white/20 hover:scale-105 transition-all duration-700 ease-out group"
-                        style={{ transitionDelay: `${800 + featureIndex * 200}ms` }}
+                        style={{ transitionDelay: `${600 + featureIndex * 200}ms` }}
                       >
                         <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
                           {feature.icon}
@@ -215,7 +219,7 @@ const InteractiveSection = () => {
                 )}
 
                 {/* CTA Button */}
-                <div className={`transition-all duration-1200 ease-out delay-900 ${
+                <div className={`transition-all duration-1000 ease-out delay-600 ${
                   currentIndex === index 
                     ? 'translate-y-0 opacity-100' 
                     : '-translate-y-32 opacity-0'
