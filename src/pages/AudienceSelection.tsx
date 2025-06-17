@@ -11,9 +11,8 @@ const AudienceSelection = () => {
   };
 
   useEffect(() => {
-    // Initialize Three.js shader background similar to Nexus
     const initShaderBackground = () => {
-      console.log('Initializing Three.js shader background...');
+      console.log('Initializing enhanced shader background...');
       const canvas = document.getElementById('shader-bg') as HTMLCanvasElement;
       if (!canvas) {
         console.error('Canvas not found');
@@ -26,14 +25,19 @@ const AudienceSelection = () => {
         return;
       }
 
-      console.log('Creating Three.js scene...');
+      console.log('Creating Three.js scene with enhanced shader...');
       
       // @ts-ignore
       const scene = new THREE.Scene();
       // @ts-ignore
       const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
       // @ts-ignore
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+      const renderer = new THREE.WebGLRenderer({ 
+        canvas, 
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance"
+      });
       
       const uniforms = {
         // @ts-ignore
@@ -42,51 +46,102 @@ const AudienceSelection = () => {
         iResolution: { value: new THREE.Vector2() }
       };
 
+      // Enhanced shader with more visible flowing light beams
       // @ts-ignore
       const material = new THREE.ShaderMaterial({
         uniforms,
-        vertexShader: `void main(){gl_Position=vec4(position,1.0);}`,
+        vertexShader: `
+          void main() {
+            gl_Position = vec4(position, 1.0);
+          }
+        `,
         fragmentShader: `
           uniform vec2 iResolution;
           uniform float iTime;
           
-          float strength(vec2 src, vec2 dir, vec2 c, float a, float b, float s) {
-            vec2 d = c - src; 
-            float cosang = dot(normalize(d), dir);
-            return clamp((0.45 + 0.15 * sin(cosang * a + iTime * s)) + (0.3 + 0.2 * cos(-cosang * b + iTime * s)), 0., 1.) *
-                   clamp((iResolution.x - length(d)) / iResolution.x, 0.5, 1.);
+          float noise(vec2 p) {
+            return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+          }
+          
+          float fbm(vec2 p) {
+            float value = 0.0;
+            float amplitude = 0.5;
+            for(int i = 0; i < 4; i++) {
+              value += amplitude * noise(p);
+              p *= 2.0;
+              amplitude *= 0.5;
+            }
+            return value;
+          }
+          
+          float beam(vec2 uv, vec2 start, vec2 end, float width, float intensity) {
+            vec2 dir = normalize(end - start);
+            vec2 perp = vec2(-dir.y, dir.x);
+            vec2 toPoint = uv - start;
+            float along = dot(toPoint, dir);
+            float across = abs(dot(toPoint, perp));
+            float falloff = 1.0 - smoothstep(0.0, width, across);
+            float lengthFalloff = 1.0 - smoothstep(0.0, length(end - start), along);
+            lengthFalloff *= smoothstep(-0.1, 0.0, along);
+            return falloff * lengthFalloff * intensity;
           }
           
           void main() {
-            vec2 c = gl_FragCoord.xy;
-            vec2 res = iResolution;
-            vec2 p1 = res * vec2(.7, -.4);
-            vec2 d1 = normalize(vec2(1., -.116));
-            vec2 p2 = res * vec2(.8, -.6);
-            vec2 d2 = normalize(vec2(1., .241));
+            vec2 uv = gl_FragCoord.xy / iResolution.xy;
+            vec2 centeredUv = (gl_FragCoord.xy - 0.5 * iResolution.xy) / iResolution.y;
             
-            vec4 col = vec4(0);
-            col += vec4(1) * strength(p1, d1, c, 36.22, 21.11, 1.5) * .5;
-            col += vec4(1) * strength(p2, d2, c, 22.39, 18.02, 1.1) * .4;
+            vec3 color = vec3(0.0);
             
-            float br = 1. - (c.y / res.y);
-            col.x *= .1 + br * .8; 
-            col.y *= .3 + br * .6; 
-            col.z *= .5 + br * .5;
+            // Multiple flowing light beams
+            float time = iTime * 0.5;
             
-            gl_FragColor = col * .25;
+            // Beam 1 - Diagonal flowing
+            vec2 start1 = vec2(-1.5 + sin(time) * 0.3, -1.0 + cos(time * 0.7) * 0.2);
+            vec2 end1 = vec2(1.5 + cos(time * 0.8) * 0.4, 1.0 + sin(time * 0.6) * 0.3);
+            float beam1 = beam(centeredUv, start1, end1, 0.05, 0.8);
+            color += vec3(0.2, 0.6, 1.0) * beam1;
+            
+            // Beam 2 - Horizontal flowing
+            vec2 start2 = vec2(-1.2 + cos(time * 1.2) * 0.4, 0.3 + sin(time * 0.9) * 0.2);
+            vec2 end2 = vec2(1.2 + sin(time * 0.7) * 0.3, -0.2 + cos(time * 1.1) * 0.25);
+            float beam2 = beam(centeredUv, start2, end2, 0.04, 0.6);
+            color += vec3(0.6, 0.3, 1.0) * beam2;
+            
+            // Beam 3 - Curved path
+            vec2 start3 = vec2(0.8 + sin(time * 1.5) * 0.2, -0.8 + cos(time) * 0.3);
+            vec2 end3 = vec2(-0.6 + cos(time * 0.8) * 0.4, 0.6 + sin(time * 1.3) * 0.2);
+            float beam3 = beam(centeredUv, start3, end3, 0.06, 0.7);
+            color += vec3(0.3, 1.0, 0.7) * beam3;
+            
+            // Add subtle background gradient
+            float gradient = 1.0 - length(centeredUv) * 0.3;
+            color += vec3(0.02, 0.05, 0.1) * gradient;
+            
+            // Add some sparkle effects
+            float sparkle = fbm(centeredUv * 10.0 + time) * 0.1;
+            color += vec3(sparkle);
+            
+            // Enhance brightness and contrast
+            color = pow(color, vec3(0.8));
+            color *= 1.2;
+            
+            gl_FragColor = vec4(color, 1.0);
           }
-        `
+        `,
+        transparent: true
       });
 
       // @ts-ignore
-      scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+      scene.add(mesh);
 
       const resize = () => {
         const w = window.innerWidth;
         const h = window.innerHeight;
         renderer.setSize(w, h);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         uniforms.iResolution.value.set(w, h);
+        console.log(`Canvas resized to: ${w}x${h}`);
       };
 
       const animate = () => {
@@ -95,7 +150,7 @@ const AudienceSelection = () => {
         requestAnimationFrame(animate);
       };
 
-      console.log('Starting animation loop...');
+      console.log('Starting enhanced animation loop...');
       resize();
       animate();
 
@@ -105,9 +160,11 @@ const AudienceSelection = () => {
 
       window.addEventListener('resize', handleResize);
       return () => {
+        console.log('Cleaning up shader background...');
         window.removeEventListener('resize', handleResize);
         renderer.dispose();
         material.dispose();
+        mesh.geometry.dispose();
       };
     };
 
@@ -116,49 +173,54 @@ const AudienceSelection = () => {
     if (existingScript) {
       // @ts-ignore
       if (window.THREE) {
-        initShaderBackground();
+        const cleanup = initShaderBackground();
+        return cleanup;
       }
     } else {
       const script = document.createElement('script');
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
       script.onload = () => {
         console.log('Three.js loaded successfully');
-        setTimeout(initShaderBackground, 100);
+        setTimeout(() => {
+          const cleanup = initShaderBackground();
+          return cleanup;
+        }, 100);
       };
       script.onerror = () => {
         console.error('Failed to load Three.js');
       };
       document.head.appendChild(script);
+      
+      return () => {
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      };
     }
-
-    return () => {
-      const script = document.querySelector('script[src*="three.min.js"]');
-      if (script) {
-        document.head.removeChild(script);
-      }
-    };
   }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-black">
-      {/* Animated Shader Background */}
+      {/* Enhanced Shader Background */}
       <canvas 
         id="shader-bg" 
-        className="fixed inset-0 w-full h-full -z-10"
+        className="fixed inset-0 w-full h-full"
         style={{ 
           position: 'fixed',
           top: 0,
           left: 0,
           width: '100vw',
           height: '100vh',
-          zIndex: -10
+          zIndex: 0,
+          pointerEvents: 'none'
         }}
-      ></canvas>
+      />
 
+      {/* Content overlay */}
       <div className="min-h-screen flex flex-col justify-center items-center px-6 py-8 relative z-10">
         <div className="max-w-md w-full mx-auto">
           {/* Glass morphism card */}
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 shadow-2xl">
+          <div className="bg-black/40 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
             {/* Header */}
             <div className="text-center mb-8">
               <h1 className="text-3xl font-light text-white mb-3 tracking-wide">
