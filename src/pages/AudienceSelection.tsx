@@ -378,27 +378,30 @@ const AudienceSelection = () => {
       title: 'Intelligent Automation',
       description: 'Automate repetitive tasks across tools like Slack, Notion, GitHub, and Figma with AI-powered triggers and actions—no code required.',
       action: 'Learn more',
-      gradient: 'from-purple-500 to-indigo-600',
-      hoverColor: 'hover:border-purple-500/40 hover:shadow-purple-500/20',
-      textColor: 'text-purple-400'
+      gradient: 'from-indigo-500 to-purple-600',
+      hoverColor: 'hover:border-indigo-500/60 hover:shadow-indigo-500/30',
+      textColor: 'text-indigo-400',
+      bgHover: 'hover:bg-indigo-500/10'
     },
     {
       icon: Link,
       title: 'Unified Integrations',
       description: 'Connect 300+ apps into one seamless workspace. Sync files, messages, and tasks instantly between your favorite tools.',
       action: 'View integrations',
-      gradient: 'from-green-500 to-emerald-600',
-      hoverColor: 'hover:border-green-500/40 hover:shadow-green-500/20',
-      textColor: 'text-green-400'
+      gradient: 'from-emerald-500 to-green-600',
+      hoverColor: 'hover:border-emerald-500/60 hover:shadow-emerald-500/30',
+      textColor: 'text-emerald-400',
+      bgHover: 'hover:bg-emerald-500/10'
     },
     {
       icon: BarChart3,
       title: 'Real-Time Insights',
       description: 'Monitor productivity, track KPIs, and visualize workflow ROI with live dashboards and actionable analytics.',
       action: 'See analytics',
-      gradient: 'from-blue-500 to-sky-600',
-      hoverColor: 'hover:border-blue-500/40 hover:shadow-blue-500/20',
-      textColor: 'text-blue-400'
+      gradient: 'from-blue-500 to-cyan-600',
+      hoverColor: 'hover:border-blue-500/60 hover:shadow-blue-500/30',
+      textColor: 'text-blue-400',
+      bgHover: 'hover:bg-blue-500/10'
     }
   ];
 
@@ -527,9 +530,8 @@ const AudienceSelection = () => {
                 <div className="text-center mb-4">
                   <button
                     onClick={handleFlip}
-                    className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 border border-white/20 hover:border-white/30 rounded-xl px-4 py-2 text-white font-medium transition-all duration-300 hover:scale-105"
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-orange-500/20 hover:from-blue-500/30 hover:to-orange-500/30 border border-white/20 hover:border-white/30 rounded-xl px-4 py-2 text-white font-medium transition-all duration-300 hover:scale-105"
                   >
-                    <Bot className="w-4 h-4" />
                     <span className="text-sm">Discover Platform Features</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
@@ -562,15 +564,12 @@ const AudienceSelection = () => {
               >
                 {/* Features Header */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center mb-3">
+                  <div className="inline-flex items-center justify-center mb-4">
                     <img 
                       src="/lovable-uploads/285c4d5c-0439-42e9-9ea6-a7a05b9c8489.png" 
                       alt="HVAC Marketplace Logo" 
                       className="w-16 h-16 object-contain"
                     />
-                  </div>
-                  <div className="inline-block px-3 py-1 bg-purple-500/20 border border-purple-400/30 text-purple-300 rounded-full text-xs font-medium tracking-tight mb-3">
-                    Platform Features
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
                     Supercharge your workflow
@@ -585,7 +584,7 @@ const AudienceSelection = () => {
                   {platformFeatures.map((feature, index) => (
                     <div 
                       key={index}
-                      className={`group bg-white/5 border border-white/10 ${feature.hoverColor} hover:bg-white/10 rounded-xl p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]`}
+                      className={`group bg-white/5 border border-white/10 ${feature.hoverColor} ${feature.bgHover} rounded-xl p-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]`}
                     >
                       <div className="flex items-start gap-3">
                         {/* Icon */}
