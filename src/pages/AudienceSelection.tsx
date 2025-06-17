@@ -1,4 +1,5 @@
 
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -152,13 +153,141 @@ const AudienceSelection = () => {
       };
     };
 
-    // Load Three.js and initialize
+    const initAuroraBackground = () => {
+      console.log('Initializing aurora background...');
+      const canvas = document.getElementById('aurora-bg') as HTMLCanvasElement;
+      if (!canvas) {
+        console.error('Aurora canvas not found');
+        return;
+      }
+
+      // @ts-ignore - THREE.js loaded via CDN
+      if (!window.THREE) {
+        console.error('Three.js not loaded for aurora');
+        return;
+      }
+
+      console.log('Creating Three.js aurora scene...');
+      
+      // @ts-ignore - THREE.js loaded via CDN
+      const scene = new window.THREE.Scene();
+      // @ts-ignore - THREE.js loaded via CDN
+      const camera = new window.THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      // @ts-ignore - THREE.js loaded via CDN
+      const renderer = new window.THREE.WebGLRenderer({ 
+        canvas, 
+        alpha: true,
+        antialias: true
+      });
+      
+      const uniforms = {
+        // @ts-ignore - THREE.js loaded via CDN
+        iTime: { value: 0 },
+        // @ts-ignore - THREE.js loaded via CDN
+        iResolution: { value: new window.THREE.Vector2() }
+      };
+
+      // @ts-ignore - THREE.js loaded via CDN
+      const material = new window.THREE.ShaderMaterial({
+        uniforms,
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+              vUv = uv;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float iTime;
+          uniform vec2 iResolution;
+          varying vec2 vUv;
+
+          #define S smoothstep
+
+          vec4 Line(vec2 uv, float speed, float height, vec3 col) {
+              uv.y += S(1., 0., abs(uv.x)) * sin(iTime * speed + uv.x * height) * 0.2;
+              return vec4(S(0.06 * S(0.2, 0.9, abs(uv.x)), 0., abs(uv.y) - 0.004) * col, 1.0) * S(1., 0.3, abs(uv.x));
+          }
+
+          void main() {
+              vec2 uv = (vUv - 0.5) * vec2(iResolution.x / iResolution.y, 1.0);
+              vec4 O = vec4(0.);
+              
+              for (float i = 0.; i <= 5.; i += 1.) {
+                  float t = i / 5.;
+                  float timeOffset = iTime * 0.3 + t * 2.0;
+                  
+                  // Aurora color palette
+                  vec3 auroraColor = vec3(
+                      0.1 + 0.6 * sin(timeOffset + t * 3.14159),
+                      0.3 + 0.7 * sin(timeOffset * 1.3 + t * 2.0),
+                      0.4 + 0.6 * cos(timeOffset * 0.8 + t * 1.5)
+                  );
+                  
+                  // Add some green-cyan aurora tones
+                  auroraColor = mix(auroraColor, vec3(0.0, 0.8, 0.6), sin(timeOffset + t) * 0.5 + 0.5);
+                  // Add purple-pink highlights
+                  auroraColor = mix(auroraColor, vec3(0.7, 0.2, 0.9), cos(timeOffset * 0.7 + t * 1.2) * 0.3 + 0.3);
+                  
+                  O += Line(uv, 1. + t * 0.8, 4. + t, auroraColor);
+              }
+              
+              gl_FragColor = O;
+          }
+        `,
+        transparent: true,
+        // @ts-ignore - THREE.js loaded via CDN
+        blending: window.THREE.AdditiveBlending
+      });
+
+      // @ts-ignore - THREE.js loaded via CDN
+      const mesh = new window.THREE.Mesh(new window.THREE.PlaneGeometry(2, 2), material);
+      scene.add(mesh);
+
+      const resize = () => {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        renderer.setSize(w, h);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio * 2, 3));
+        uniforms.iResolution.value.set(w * 2, h * 2);
+        console.log(`Aurora canvas resized to: ${w}x${h}`);
+      };
+
+      const animate = () => {
+        uniforms.iTime.value = performance.now() * 0.001;
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      };
+
+      console.log('Starting aurora animation loop...');
+      resize();
+      animate();
+
+      const handleResize = () => {
+        resize();
+      };
+
+      window.addEventListener('resize', handleResize);
+      return () => {
+        console.log('Cleaning up aurora background...');
+        window.removeEventListener('resize', handleResize);
+        renderer.dispose();
+        material.dispose();
+        mesh.geometry.dispose();
+      };
+    };
+
+    // Load Three.js and initialize both backgrounds
     const existingScript = document.querySelector('script[src*="three.min.js"]');
     if (existingScript) {
       // @ts-ignore - THREE.js loaded via CDN
       if (window.THREE) {
-        const cleanup = initShaderBackground();
-        return cleanup;
+        const cleanupShader = initShaderBackground();
+        const cleanupAurora = initAuroraBackground();
+        return () => {
+          if (cleanupShader) cleanupShader();
+          if (cleanupAurora) cleanupAurora();
+        };
       }
     } else {
       const script = document.createElement('script');
@@ -166,8 +295,12 @@ const AudienceSelection = () => {
       script.onload = () => {
         console.log('Three.js loaded successfully');
         setTimeout(() => {
-          const cleanup = initShaderBackground();
-          return cleanup;
+          const cleanupShader = initShaderBackground();
+          const cleanupAurora = initAuroraBackground();
+          return () => {
+            if (cleanupShader) cleanupShader();
+            if (cleanupAurora) cleanupAurora();
+          };
         }, 100);
       };
       script.onerror = () => {
@@ -185,7 +318,7 @@ const AudienceSelection = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-black">
-      {/* Shader Background Canvas */}
+      {/* Base Shader Background Canvas */}
       <canvas 
         id="shader-bg" 
         className="fixed inset-0 w-full h-full"
@@ -196,6 +329,21 @@ const AudienceSelection = () => {
           width: '100vw',
           height: '100vh',
           zIndex: 0,
+          pointerEvents: 'none'
+        }}
+      />
+
+      {/* Aurora Background Canvas - Above base layer */}
+      <canvas 
+        id="aurora-bg" 
+        className="fixed inset-0 w-full h-full"
+        style={{ 
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 1,
           pointerEvents: 'none'
         }}
       />
@@ -265,3 +413,4 @@ const AudienceSelection = () => {
 };
 
 export default AudienceSelection;
+
