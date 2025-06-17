@@ -45,34 +45,45 @@ const InteractiveSection = () => {
     let scrollTimeout: NodeJS.Timeout;
 
     const handleWheel = (e: WheelEvent) => {
-      // Check if we're within the interactive section bounds
       const rect = sectionElement.getBoundingClientRect();
       const mouseY = e.clientY;
       
-      // Only handle if mouse is within the section AND section is visible
-      if (mouseY < rect.top || mouseY > rect.bottom || rect.top > window.innerHeight || rect.bottom < 0) {
+      // Check if the section is visible and mouse is within bounds
+      const isInView = rect.top < window.innerHeight && rect.bottom > 0;
+      const isMouseInSection = mouseY >= rect.top && mouseY <= rect.bottom;
+      
+      if (!isInView || !isMouseInSection) {
         return;
       }
       
       e.preventDefault();
+      
+      // Prevent rapid scrolling but allow immediate direction changes
       if (isScrolling) return;
 
+      console.log('Scroll detected, current index:', currentIndex, 'delta:', e.deltaY);
+      
       setIsScrolling(true);
+      
       if (e.deltaY > 0) {
-        // Scroll down
+        // Scroll down - next section
         if (currentIndex < sectionsData.length - 1) {
+          console.log('Moving to next section:', currentIndex + 1);
           setCurrentIndex(prev => prev + 1);
         }
       } else {
-        // Scroll up
+        // Scroll up - previous section
         if (currentIndex > 0) {
+          console.log('Moving to previous section:', currentIndex - 1);
           setCurrentIndex(prev => prev - 1);
         }
       }
 
+      // Reset scrolling state after animation
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
-      }, 800); // Reduced timeout for better responsiveness
+        console.log('Scroll lock released');
+      }, 500);
     };
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -101,11 +112,10 @@ const InteractiveSection = () => {
 
         scrollTimeout = setTimeout(() => {
           setIsScrolling(false);
-        }, 800);
+        }, 500);
       }
     };
 
-    // Use window events but with improved detection
     window.addEventListener('wheel', handleWheel, { passive: false });
     sectionElement.addEventListener('touchstart', handleTouchStart);
     sectionElement.addEventListener('touchend', handleTouchEnd);
