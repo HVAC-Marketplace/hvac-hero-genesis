@@ -9,14 +9,21 @@ const InteractiveSection = () => {
     const section = sectionRef.current;
     if (!section) return;
 
+    console.log('Setting up intersection observer for InteractiveSection');
+
     // Intersection Observer for entrance animation
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        console.log('Intersection observer triggered:', entry.isIntersecting, 'Intersection ratio:', entry.intersectionRatio);
+        if (entry.isIntersecting && entry.intersectionRatio > 0.2) {
+          console.log('Setting isVisible to true');
           setIsVisible(true);
+        } else {
+          console.log('Setting isVisible to false');
+          setIsVisible(false);
         }
       },
-      { threshold: 0.1 }
+      { threshold: [0, 0.1, 0.2, 0.3] }
     );
 
     observer.observe(section);
@@ -41,6 +48,8 @@ const InteractiveSection = () => {
 
     return () => observer.disconnect();
   }, []);
+
+  console.log('InteractiveSection render - isVisible:', isVisible);
 
   return (
     <section 
