@@ -68,21 +68,21 @@ const HeroSection = () => {
 
         // Initialize enhanced globe with HVAC marketplace styling
         globe = new window.EnhancedGlobe('globeCanvas', {
-          globeRadius: 1.5,
-          particleSize: 0.03,
+          globeRadius: 1.8,
+          particleSize: 0.04,
           animationDuration: 4000,
           focusRegion: 'north_america',
           colors: {
-            background: '#000000',
-            ocean: '#0F172A',
-            glow: '#2563EB', // HVAC blue theme
+            background: 'transparent',
+            ocean: '#1e293b',
+            glow: '#3b82f6',
             particles: {
-              north_america: '#3B82F6', // Highlighted for US market focus
-              south_america: '#10B981',
-              europe: '#F59E0B',
-              africa: '#EF4444',
-              asia: '#8B5CF6',
-              australia: '#06B6D4'
+              north_america: '#60a5fa',
+              south_america: '#34d399',
+              europe: '#f59e0b',
+              africa: '#ef4444',
+              asia: '#8b5cf6',
+              australia: '#06b6d4'
             }
           }
         });
@@ -132,23 +132,16 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen bg-slate-900 overflow-hidden font-inter section-wave">
-      {/* Enhanced Globe Canvas - positioned behind content */}
+    <section className="relative min-h-screen bg-slate-900 overflow-hidden font-inter">
+      {/* Enhanced Globe Canvas - positioned at the front with proper z-index */}
       <canvas 
         id="globeCanvas" 
         className="absolute inset-0 w-full h-full hidden sm:block"
         style={{ 
-          zIndex: 1,
-          opacity: 1,
-          pointerEvents: 'none',
-          background: 'transparent'
+          zIndex: 15,
+          pointerEvents: 'none'
         }}
       />
-
-      {/* Debug info - remove this after testing */}
-      <div className="absolute top-4 left-4 text-white text-sm bg-black/50 p-2 rounded z-50">
-        Canvas Debug: Check console for logs
-      </div>
 
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5" style={{ zIndex: 2 }}>
@@ -159,9 +152,9 @@ const HeroSection = () => {
       </div>
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 via-slate-900/80 to-slate-900" style={{ zIndex: 3 }} />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-800/30 via-slate-900/50 to-slate-900/70" style={{ zIndex: 3 }} />
 
-      <div className="relative container mx-auto px-4 py-16 lg:py-24" style={{ zIndex: 10 }}>
+      <div className="relative container mx-auto px-4 py-16 lg:py-24" style={{ zIndex: 20 }}>
         {/* Main Hero Content */}
         <div className="max-w-6xl mx-auto text-center animate-fade-in">
           {/* Headline */}
