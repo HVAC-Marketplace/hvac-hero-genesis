@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Building, Wrench, Bot, Link, BarChart3, ArrowRight, RotateCcw } from 'lucide-react';
@@ -350,24 +349,24 @@ const AudienceSelection = () => {
     {
       id: 'homeowner',
       title: 'Homeowners',
-      subtitle: 'Residential solutions',
-      description: 'Access your secure dashboard for home HVAC services',
+      subtitle: 'Residential Solutions',
+      description: 'Order, track, and maintain your home\'s HVAC equipment with ease.',
       icon: Home,
       gradient: 'from-blue-400/15 to-blue-600/15 hover:from-blue-400/25 hover:to-blue-600/25'
     },
     {
       id: 'business',
       title: 'Businesses',
-      subtitle: 'Commercial solutions',
-      description: 'Manage your organization\'s HVAC infrastructure',
+      subtitle: 'Commercial Solutions',
+      description: 'Centralize procurement and monitor your organization\'s HVAC assets from one dashboard.',
       icon: Building,
       gradient: 'from-white/10 to-white/5 hover:from-white/15 hover:to-white/10'
     },
     {
       id: 'contractor',
       title: 'Contractors',
-      subtitle: 'Professional tools',
-      description: 'Professional technician dashboard and tools',
+      subtitle: 'Professional Tools',
+      description: 'Unlock trade-only pricing, job management features, and technical resources.',
       icon: Wrench,
       gradient: 'from-orange-400/15 to-amber-500/15 hover:from-orange-400/25 hover:to-amber-500/25'
     }
@@ -470,8 +469,7 @@ const AudienceSelection = () => {
                     Welcome to the HVAC Marketplace
                   </h1>
                   <p className="text-white/70 text-sm font-light leading-relaxed max-w-lg mx-auto">
-                    Experience the future of HVAC marketplace with our advanced glassmorphism interface. 
-                    Choose your role to access tailored solutions.
+                    Choose your role to access tailor-made HVAC solutions and streamline your workflow.
                   </p>
                 </div>
 
@@ -479,15 +477,15 @@ const AudienceSelection = () => {
                 <div className="flex justify-center items-center gap-4 mb-6 text-xs">
                   <div className="flex items-center text-white/60">
                     <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></div>
-                    <span>Military-grade security</span>
+                    <span>Secure account management</span>
                   </div>
                   <div className="flex items-center text-white/60">
                     <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mr-2"></div>
-                    <span>Lightning-fast access</span>
+                    <span>Rapid product ordering</span>
                   </div>
                   <div className="flex items-center text-white/60">
                     <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2"></div>
-                    <span>Premium experience</span>
+                    <span>Personalized service & support</span>
                   </div>
                 </div>
                 
@@ -516,7 +514,7 @@ const AudienceSelection = () => {
                         {/* Sign In Button */}
                         <div className="w-full">
                           <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg px-3 py-2 text-white font-medium group-hover:bg-white/20 group-hover:border-white/30 transition-all duration-300 text-xs">
-                            Sign in securely →
+                            Enter here →
                           </div>
                         </div>
                       </div>
@@ -533,7 +531,7 @@ const AudienceSelection = () => {
                     onClick={handleFlip}
                     className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-orange-500/20 hover:from-blue-500/30 hover:to-orange-500/30 border border-white/20 hover:border-white/30 rounded-xl px-4 py-2 text-white font-medium transition-all duration-300 hover:scale-105"
                   >
-                    <span className="text-sm">Discover Platform Features</span>
+                    <span className="text-sm">Explore All Features</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
