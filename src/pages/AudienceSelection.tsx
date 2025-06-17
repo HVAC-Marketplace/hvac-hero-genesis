@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -67,7 +68,8 @@ const AudienceSelection = () => {
             float distance = length(position - projection);
             
             // Tighter beam with higher contrast
-            float beamFalloff = exp(-distance * width);\n            // Gentle distance fade
+            float beamFalloff = exp(-distance * width);
+            // Gentle distance fade
             float lengthFalloff = exp(-projLength * 0.0005);
             
             return beamFalloff * lengthFalloff * intensity;
@@ -77,8 +79,8 @@ const AudienceSelection = () => {
             vec2 uv = gl_FragCoord.xy / iResolution.xy;
             vec2 pos = gl_FragCoord.xy;
             
-            // Origin at bottom-right corner
-            vec2 origin = vec2(iResolution.x * 1.1, iResolution.y * 1.1);
+            // Origin further away from bottom-right corner
+            vec2 origin = vec2(iResolution.x * 1.3, iResolution.y * 1.3);
             
             vec3 color = vec3(0.0);
             
