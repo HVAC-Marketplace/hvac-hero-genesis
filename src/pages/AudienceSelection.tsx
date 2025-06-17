@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Building, Wrench } from 'lucide-react';
@@ -409,15 +408,17 @@ const AudienceSelection = () => {
             <div className="text-center mb-6">
               {/* Brand Logo with Professional Background */}
               <div className="inline-flex items-center justify-center mb-3 relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-white/20 via-white/10 to-white/5 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 shadow-lg">
-                  <img 
-                    src="/lovable-uploads/e85d666f-01ca-44e0-bc99-4e537db18924.png" 
-                    alt="HVAC Marketplace Logo" 
-                    className="w-12 h-12 object-contain"
-                  />
+                <div className="w-20 h-20 bg-gradient-to-br from-white/15 via-white/8 to-transparent backdrop-blur-xl rounded-full flex items-center justify-center border border-white/10 shadow-lg">
+                  <div className="w-14 h-14 bg-gradient-to-br from-gray-800/80 to-gray-900/90 rounded-xl flex items-center justify-center shadow-inner">
+                    <img 
+                      src="/lovable-uploads/e85d666f-01ca-44e0-bc99-4e537db18924.png" 
+                      alt="HVAC Marketplace Logo" 
+                      className="w-10 h-10 object-contain mix-blend-screen"
+                    />
+                  </div>
                 </div>
                 {/* Subtle glow effect */}
-                <div className="absolute inset-0 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-orange-400/20 rounded-full blur-xl opacity-60"></div>
+                <div className="absolute inset-0 w-20 h-20 bg-gradient-to-br from-blue-400/15 to-orange-400/15 rounded-full blur-xl opacity-70"></div>
               </div>
               <h1 className="text-2xl font-light text-white mb-2 tracking-wide">
                 Welcome to the HVAC Marketplace
